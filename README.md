@@ -1,2 +1,2 @@
-# CanteenFoodOrdering
-Application for ordering food in college canteen
+# CanteenFoodOrdering [Server]
+Server sid for Canteen FoodO rdering Mobile Application
