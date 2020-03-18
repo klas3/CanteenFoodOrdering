@@ -1,2 +1,2 @@
 # CanteenFoodOrdering [Server]
-Server sid for Canteen FoodO rdering Mobile Application
+Server sid for Canteen Food Ordering Mobile Application
