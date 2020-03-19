@@ -158,16 +158,10 @@ namespace CanteenFoodOrdering_Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("DishHistoryId")
+                    b.Property<int>("DishHistoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DishId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OrderHistoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
+                    b.Property<int>("OrderHistoryId")
                         .HasColumnType("int");
 
                     b.HasKey("OrderedDishHistoryId");
@@ -403,11 +397,15 @@ namespace CanteenFoodOrdering_Server.Migrations
                 {
                     b.HasOne("CanteenFoodOrdering_Server.Models.DishHistory", "DishHistory")
                         .WithMany("OrderedDishHistories")
-                        .HasForeignKey("DishHistoryId");
+                        .HasForeignKey("DishHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("CanteenFoodOrdering_Server.Models.OrderHistory", "OrderHistory")
                         .WithMany("OrderedDishHistories")
-                        .HasForeignKey("OrderHistoryId");
+                        .HasForeignKey("OrderHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -240,10 +240,8 @@ namespace CanteenFoodOrdering_Server.Migrations
                 {
                     OrderedDishHistoryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(nullable: false),
-                    DishId = table.Column<int>(nullable: false),
-                    OrderHistoryId = table.Column<int>(nullable: true),
-                    DishHistoryId = table.Column<int>(nullable: true)
+                    OrderHistoryId = table.Column<int>(nullable: false),
+                    DishHistoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,13 +251,13 @@ namespace CanteenFoodOrdering_Server.Migrations
                         column: x => x.DishHistoryId,
                         principalTable: "DishHistories",
                         principalColumn: "DishHistoryId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderedDishHistories_OrderHistories_OrderHistoryId",
                         column: x => x.OrderHistoryId,
                         principalTable: "OrderHistories",
                         principalColumn: "OrderHistoryId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
