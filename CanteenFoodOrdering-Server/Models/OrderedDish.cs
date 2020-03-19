@@ -11,7 +11,7 @@ namespace CanteenFoodOrdering_Server.Models
         public int OrderId { get; set; }
         public int DishId { get; set; }
 
-        public virtual Order OrderHistory { get; set; }
-        public virtual Dish DishHistory { get; set; }
+        public virtual Order Order { get; set; }
+        public virtual Dish Dish { get; set; }
     }
 }
