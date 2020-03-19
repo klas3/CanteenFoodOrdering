@@ -7,7 +7,7 @@ namespace CanteenFoodOrdering_Server.Models
 {
     public class OrderedDishHistory
     {
-        public int OrderedDishHistoryid { get; set; }
+        public int OrderedDishHistoryId { get; set; }
         public int OrderId { get; set; }
         public int DishId { get; set; }
 
