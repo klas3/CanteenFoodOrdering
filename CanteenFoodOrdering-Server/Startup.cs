@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CanteenFoodOrdering_Server.Data;
 using Microsoft.EntityFrameworkCore;
+using CanteenFoodOrdering_Server.Repository;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace CanteenFoodOrdering_Server
 {
@@ -28,6 +31,21 @@ namespace CanteenFoodOrdering_Server
 
             services.AddDbContext<Context>(options =>
                  options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 7;
+                options.Password.RequireUppercase = true;
+            })
+            .AddEntityFrameworkStores<Context>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireEmail", policy => policy.RequireClaim(ClaimTypes.Email));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +66,7 @@ namespace CanteenFoodOrdering_Server
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
