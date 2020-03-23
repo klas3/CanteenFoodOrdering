@@ -121,5 +121,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
+
+        public async Task<string> GetUserRole()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            string roleName = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+
+            return roleName;
+        }
     }
 }
