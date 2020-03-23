@@ -8,5 +8,6 @@ namespace CanteenFoodOrdering_Server.Repository
     public interface IUserRepository
     {
         bool IsEmailUnique(string email);
+        Task<string> GetUserEmailById(string id);
     }
 }
