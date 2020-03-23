@@ -119,7 +119,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
             }
 
-            return NotFound();
+            return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
     }
 }
