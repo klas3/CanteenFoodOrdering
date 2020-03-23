@@ -43,7 +43,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
             }
             ModelState.AddModelError("", "Неправильний логін або пароль");
-            return NotFound();
+            return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
         public async Task<IActionResult> Logout()
