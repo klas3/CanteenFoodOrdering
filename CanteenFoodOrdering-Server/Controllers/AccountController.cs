@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.ViewModels;
 using System.Security.Claims;
 using CanteenFoodOrdering_Server.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -122,6 +123,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
+        [Authorize]
         public async Task<string> GetUserRole()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
