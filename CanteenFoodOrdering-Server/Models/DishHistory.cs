@@ -10,7 +10,7 @@ namespace CanteenFoodOrdering_Server.Models
     {
         public int DishHistoryId { get; set; }
         public string Name { get; set; }
-        public int Cost { get; set; }
+        public float Cost { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<OrderedDishHistory> OrderedDishHistories { get; set; }

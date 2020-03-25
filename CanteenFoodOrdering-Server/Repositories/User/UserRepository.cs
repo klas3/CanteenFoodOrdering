@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace CanteenFoodOrdering_Server.Repository
+namespace CanteenFoodOrdering_Server.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -18,9 +19,9 @@ namespace CanteenFoodOrdering_Server.Repository
             _userManager = userManager;
         }
 
-        public bool IsEmailUnique(string email)
+        public async Task<bool> IsEmailUnique(string email)
         {
-            return _context.Users.SingleOrDefault(user => user.Email == email) == null;
+            return await _context.Users.SingleOrDefaultAsync(user => user.Email == email) == null;
         }
 
         public async Task<string> GetUserEmailById(string id)

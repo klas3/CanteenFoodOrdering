@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CanteenFoodOrdering_Server.Data;
+using CanteenFoodOrdering_Server.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CanteenFoodOrdering_Server.Repositories
+{
+    public class OrderRepository : IOrderRepository
+    {
+        private Context _context;
+
+        public OrderRepository(Context context)
+        {
+            _context = context;
+        }
+
+        public async Task CreateOrder(Order order)
+        {
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Order> GetOrderById(int id)
+        {
+            return await _context.Orders.SingleOrDefaultAsync(x => x.OrderId == id);
+        }
+
+        public async Task SetOrderPaymentStatus(bool status, int orderId)
+        {
+            (await GetOrderById(orderId)).IsPaid = status;
+            await _context.SaveChangesAsync();
+        }
+    }
+}
