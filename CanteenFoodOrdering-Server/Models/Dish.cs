@@ -10,7 +10,7 @@ namespace CanteenFoodOrdering_Server.Models
         public int DishId { get; set; }
         public int CategoryId { get; set; }
         public string Name { get; set; }
-        public bool Cost { get; set; }
+        public float Cost { get; set; }
         public string Description { get; set; }
 
         public virtual Category Category { get; set; }
