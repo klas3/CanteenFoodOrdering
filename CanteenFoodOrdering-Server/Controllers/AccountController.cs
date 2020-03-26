@@ -78,15 +78,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                             await _roleManager.CreateAsync(new IdentityRole("Customer"));
                         }
 
-                        if (viewModel.Role == "Administrator")
-                        {
-                            await _userManager.AddToRoleAsync(user, "Administrator");
-                        }
-                        else if (viewModel.Role == "Cook")
+
+                        if (viewModel.Role == "Cook" && User.IsInRole("Administrator"))
                         {
                             await _userManager.AddToRoleAsync(user, "Cook");
                         }
-                        else if (viewModel.Role == "Cashier")
+                        else if (viewModel.Role == "Cashier" && User.IsInRole("Administrator"))
                         {
                             await _userManager.AddToRoleAsync(user, "Cashier");
                         }

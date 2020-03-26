@@ -28,9 +28,9 @@ namespace CanteenFoodOrdering_Server.Repositories
             return await _context.Orders.SingleOrDefaultAsync(x => x.OrderId == id);
         }
 
-        public async Task SetOrderPaymentStatus(bool status, int orderId)
+        public async Task UpdateOrder(Order order)
         {
-            (await GetOrderById(orderId)).IsPaid = status;
+            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
     }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
 using CanteenFoodOrdering_Server.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -47,6 +48,24 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishId = dishId
                     });
                 }
+
+                return Ok();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cashier")]
+        public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+            
+            if (order != null)
+            {
+                order.IsPaid = !order.IsPaid;
+
+                await _orderRepository.UpdateOrder(order);
 
                 return Ok();
             }
