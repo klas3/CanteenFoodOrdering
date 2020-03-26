@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.ViewModels;
 using System.Security.Claims;
-using CanteenFoodOrdering_Server.Repository;
+using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
@@ -44,7 +44,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
             }
             ModelState.AddModelError("", "Неправильний логін або пароль");
-            return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
+            return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
         public async Task<IActionResult> Logout()
@@ -52,12 +52,13 @@ namespace CanteenFoodOrdering_Server.Controllers
             await _signInManager.SignOutAsync();
             return Ok();
         }
+
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterUserViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                if (_userRepository.IsEmailUnique(viewModel.Email))
+                if (await _userRepository.IsEmailUnique(viewModel.Email))
                 {
                     IdentityUser user = new IdentityUser
                     {
@@ -77,15 +78,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                             await _roleManager.CreateAsync(new IdentityRole("Customer"));
                         }
 
-                        if (viewModel.Role == "Administrator")
-                        {
-                            await _userManager.AddToRoleAsync(user, "Administrator");
-                        }
-                        else if (viewModel.Role == "Cook")
+
+                        if (viewModel.Role == "Cook" && User.IsInRole("Administrator"))
                         {
                             await _userManager.AddToRoleAsync(user, "Cook");
                         }
-                        else if (viewModel.Role == "Cashier")
+                        else if (viewModel.Role == "Cashier" && User.IsInRole("Administrator"))
                         {
                             await _userManager.AddToRoleAsync(user, "Cashier");
                         }
@@ -120,10 +118,11 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
             }
 
-            return NotFound(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
+            return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
         [Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetUserRole()
         {
             string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();

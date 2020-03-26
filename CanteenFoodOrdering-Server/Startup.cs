@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using CanteenFoodOrdering_Server.Data;
 using Microsoft.EntityFrameworkCore;
-using CanteenFoodOrdering_Server.Repository;
+using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -33,6 +33,10 @@ namespace CanteenFoodOrdering_Server
                  options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IDishRepository, DishRepository>();
+            services.AddScoped<IOrderedDishRepository, OrderedDishRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {

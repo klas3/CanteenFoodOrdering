@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CanteenFoodOrdering_Server.Models;
+using CanteenFoodOrdering_Server.Data;
+
+namespace CanteenFoodOrdering_Server.Repositories
+{
+    public class OrderedDishRepository : IOrderedDishRepository
+    {
+        private Context _context;
+
+        public OrderedDishRepository(Context context)
+        {
+            _context = context;
+        }
+
+        public async Task CreateOrderedDish(OrderedDish orderedDish)
+        {
+            await _context.OrderedDishes.AddAsync(orderedDish);
+            await _context.SaveChangesAsync();
+        }
+    }
+}
