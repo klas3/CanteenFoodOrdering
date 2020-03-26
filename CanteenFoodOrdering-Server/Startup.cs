@@ -36,9 +36,11 @@ namespace CanteenFoodOrdering_Server
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = true;
+                options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 7;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
             })
             .AddEntityFrameworkStores<Context>();
 
