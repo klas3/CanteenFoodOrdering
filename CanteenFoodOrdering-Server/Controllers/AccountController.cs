@@ -121,18 +121,22 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetUserRole()
         {
-            string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
-
-            if (roleName == null)
+            if(User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
+
+                if (roleName == null)
+                {
+                    return NotFound();
+                }
+            
+                return Ok(roleName);
             }
 
-            return Ok(roleName);
+            return NotFound();
         }
     }
 }
