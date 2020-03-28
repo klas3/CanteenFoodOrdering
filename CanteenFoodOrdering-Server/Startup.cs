@@ -71,8 +71,8 @@ namespace CanteenFoodOrdering_Server
 
             app.UseRouting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

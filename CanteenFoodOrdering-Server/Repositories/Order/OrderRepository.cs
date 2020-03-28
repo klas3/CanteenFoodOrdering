@@ -25,13 +25,18 @@ namespace CanteenFoodOrdering_Server.Repositories
 
         public async Task<Order> GetOrderById(int id)
         {
-            return await _context.Orders.SingleOrDefaultAsync(x => x.OrderId == id);
+            return await _context.Orders.SingleOrDefaultAsync(order => order.OrderId == id);
         }
 
         public async Task UpdateOrder(Order order)
         {
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
+        }
+        
+        public async Task<List<OrderedDish>> GetFullOrderById(int id)
+        {
+            return await _context.OrderedDishes.Where(orderedDish => orderedDish.OrderId == id).ToListAsync();
         }
     }
 }

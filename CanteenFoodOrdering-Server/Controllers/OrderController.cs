@@ -14,15 +14,18 @@ namespace CanteenFoodOrdering_Server.Controllers
     {
         private IOrderRepository _orderRepository;
         private IOrderedDishRepository _orderedDishRepository;
+        private IDishRepository _dishRepository;
 
         public OrderController
         (
             IOrderRepository orderRepository,
-            IOrderedDishRepository orderedDishRepository
+            IOrderedDishRepository orderedDishRepository,
+            IDishRepository dishRepository
         )
         {
             _orderRepository = orderRepository;
             _orderedDishRepository = orderedDishRepository;
+            _dishRepository = dishRepository;
         }
 
         [HttpPost]
@@ -53,6 +56,34 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Problem();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOrderInfoById(int id)
+        {
+            return Json(await _orderRepository.GetOrderById(id));
+        }
+
+        public async Task<IActionResult> GetFullOrderInfoById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            FullOrderViewModel fullOrder = new FullOrderViewModel
+            {
+                CreationDate = order.CreationDate,
+                DesiredDate = order.DesiredDate,
+                Wishes = order.Wishes,
+                IsPaid = order.IsPaid
+            };
+
+            foreach (OrderedDish orderedDish in await _orderRepository.GetFullOrderById(id))
+            {
+                Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
+
+                fullOrder.Dishes.Add(dish);
+            }
+
+            return Json(fullOrder);
         }
 
         [HttpPost]

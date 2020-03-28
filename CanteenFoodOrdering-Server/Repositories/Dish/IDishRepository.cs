@@ -9,5 +9,6 @@ namespace CanteenFoodOrdering_Server.Repositories
     public interface IDishRepository
     {
         Task CreateDish(Dish dish);
+        Task<Dish> GetDishById(int id);
     }
 }

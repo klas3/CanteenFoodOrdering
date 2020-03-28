@@ -35,5 +35,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDishById(int id)
+        {
+            Dish dish = await _dishRepository.GetDishById(id);
+
+            return Json(dish);
+        }
     }
 }
