@@ -141,5 +141,18 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return NotFound();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAuthorizedUserInfo()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
+            }
+
+            return NotFound();
+        }
     }
 }
