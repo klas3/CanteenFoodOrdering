@@ -32,5 +32,11 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            return Json(await _categoryRepository.GetCategoryById(id));
+        }
     }
 }

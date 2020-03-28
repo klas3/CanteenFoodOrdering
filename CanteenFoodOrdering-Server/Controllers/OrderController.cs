@@ -73,14 +73,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                 CreationDate = order.CreationDate,
                 DesiredDate = order.DesiredDate,
                 Wishes = order.Wishes,
-                IsPaid = order.IsPaid
+                IsPaid = order.IsPaid,
             };
 
-            foreach (OrderedDish orderedDish in await _orderRepository.GetFullOrderById(id))
+            foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
             {
-                Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
-
-                fullOrder.Dishes.Add(dish);
+                fullOrder.DishesId.Add(orderedDish.DishId);
             }
 
             return Json(fullOrder);

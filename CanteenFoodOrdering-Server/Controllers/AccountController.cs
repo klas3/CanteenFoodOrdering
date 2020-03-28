@@ -125,21 +125,17 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUserRole()
         {
-            if(User.Identity.IsAuthenticated)
+            string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
+
+            if (roleName == null)
             {
-                string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
-
-                if (roleName == null)
-                {
-                    return NotFound();
-                }
-            
-                return Ok(roleName);
+                return NotFound();
             }
-
-            return NotFound();
+            
+            return Ok(roleName);
         }
 
         [HttpGet]

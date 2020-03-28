@@ -11,6 +11,5 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task CreateOrder(Order order);
         Task<Order> GetOrderById(int id);
         Task UpdateOrder(Order order);
-        Task<List<OrderedDish>> GetFullOrderById(int id);
     }
 }

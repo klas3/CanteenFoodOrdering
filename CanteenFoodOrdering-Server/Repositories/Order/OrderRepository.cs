@@ -33,10 +33,5 @@ namespace CanteenFoodOrdering_Server.Repositories
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
-        
-        public async Task<List<OrderedDish>> GetFullOrderById(int id)
-        {
-            return await _context.OrderedDishes.Where(orderedDish => orderedDish.OrderId == id).ToListAsync();
-        }
     }
 }
