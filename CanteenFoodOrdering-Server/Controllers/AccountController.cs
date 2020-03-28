@@ -149,7 +149,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
 
-                return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName, PhoneNumber = user.PhoneNumber });
+                return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
             }
 
             return NotFound();
