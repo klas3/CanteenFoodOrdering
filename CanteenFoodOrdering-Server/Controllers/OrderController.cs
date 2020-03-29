@@ -10,19 +10,23 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
+    [Authorize(Roles = "Cook, Cashier")]
     public class OrderController : Controller
     {
         private IOrderRepository _orderRepository;
         private IOrderedDishRepository _orderedDishRepository;
+        private IDishRepository _dishRepository;
 
         public OrderController
         (
             IOrderRepository orderRepository,
-            IOrderedDishRepository orderedDishRepository
+            IOrderedDishRepository orderedDishRepository,
+            IDishRepository dishRepository
         )
         {
             _orderRepository = orderRepository;
             _orderedDishRepository = orderedDishRepository;
+            _dishRepository = dishRepository;
         }
 
         [HttpPost]
@@ -55,8 +59,33 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetOrderInfoById(int id)
+        {
+            return Json(await _orderRepository.GetOrderById(id));
+        }
+
+        public async Task<IActionResult> GetFullOrderInfoById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            FullOrderViewModel fullOrder = new FullOrderViewModel
+            {
+                CreationDate = order.CreationDate,
+                DesiredDate = order.DesiredDate,
+                Wishes = order.Wishes,
+                IsPaid = order.IsPaid,
+            };
+
+            foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
+            {
+                fullOrder.DishesId.Add(orderedDish.DishId);
+            }
+
+            return Json(fullOrder);
+        }
+
         [HttpPost]
-        [Authorize(Roles = "Cashier")]
         public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);

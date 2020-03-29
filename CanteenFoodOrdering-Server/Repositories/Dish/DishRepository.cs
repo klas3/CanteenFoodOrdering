@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CanteenFoodOrdering_Server.Repositories
 {
@@ -26,6 +27,11 @@ namespace CanteenFoodOrdering_Server.Repositories
                 Description = dish.Description
             });
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Dish> GetDishById(int id)
+        {
+            return await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
         }
     }
 }

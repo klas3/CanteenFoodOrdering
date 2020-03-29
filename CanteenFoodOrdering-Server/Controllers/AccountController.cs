@@ -47,6 +47,8 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
+        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -125,34 +127,26 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUserRole()
         {
-            if(User.Identity.IsAuthenticated)
+            string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
+
+            if (roleName == null)
             {
-                string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
-
-                if (roleName == null)
-                {
-                    return NotFound();
-                }
-            
-                return Ok(roleName);
+                return NotFound();
             }
-
-            return NotFound();
+            
+            return Ok(roleName);
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAuthorizedUserInfo()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
-                return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
-            }
-
-            return NotFound();
+            return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
         }
     }
 }

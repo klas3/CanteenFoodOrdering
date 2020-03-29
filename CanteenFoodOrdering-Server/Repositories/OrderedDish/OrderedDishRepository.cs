@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CanteenFoodOrdering_Server.Repositories
 {
@@ -20,6 +21,13 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             await _context.OrderedDishes.AddAsync(orderedDish);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id)
+        {
+            return await _context.OrderedDishes.Include(orderedDish => orderedDish.Order)
+                .Where(orderedDish => orderedDish.Order.OrderId == id)
+                .ToListAsync();
         }
     }
 }

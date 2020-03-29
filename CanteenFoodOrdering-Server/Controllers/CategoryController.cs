@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
+    [Authorize(Roles = "Cook")]
     public class CategoryController : Controller
     {
         private ICategoryRepository _categoryRepository;
@@ -31,6 +33,13 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Problem();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Cook, Cashier")]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            return Json(await _categoryRepository.GetCategoryById(id));
         }
     }
 }

@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
+    [Authorize(Roles = "Cook")]
     public class DishController : Controller
     {
         private IDishRepository _dishRepository;
@@ -34,6 +36,13 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Problem();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Cook, Cashier")]
+        public async Task<IActionResult> GetDishById(int id)
+        {
+            return Json(await _dishRepository.GetDishById(id));
         }
     }
 }
