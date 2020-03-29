@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
+    [Authorize(Roles = "Cook, Cashier")]
     public class OrderController : Controller
     {
         private IOrderRepository _orderRepository;
@@ -85,7 +86,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Cashier")]
         public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
