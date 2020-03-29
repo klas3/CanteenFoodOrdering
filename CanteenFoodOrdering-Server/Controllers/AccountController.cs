@@ -127,6 +127,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
         {
             var result = await _userManager.ChangePasswordAsync(await _userManager.GetUserAsync(User), model.OldPassword, model.NewPassword);
