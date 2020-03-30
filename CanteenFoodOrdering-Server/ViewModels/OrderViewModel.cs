@@ -9,10 +9,10 @@ namespace CanteenFoodOrdering_Server.ViewModels
 {
     public class OrderViewModel
     {
-        [Required(ErrorMessage = "Введіть бажану дату приготування")]
+        [Required]
         public string DesiredDate { get; set; }
         public string Wishes { get; set; }
-        [Required(ErrorMessage = "Виберіть хоча б одну страву")]
+        [Required]
         public IEnumerable<int> DishesId { get; set; }
     }
 }

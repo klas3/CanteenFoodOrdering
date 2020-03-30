@@ -33,5 +33,21 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return (await _userManager.FindByIdAsync(id)).Email;
         }
+
+        public async Task ChangePasswordHash(IdentityUser user, string newPasswordHash)
+        {
+            user.PasswordHash = newPasswordHash;
+            await _context.SaveChangesAsync();
+        }
+
+        public string GenerateRandomKey()
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            int length = 8;
+
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }
