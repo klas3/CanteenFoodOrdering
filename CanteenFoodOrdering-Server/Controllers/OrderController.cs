@@ -65,6 +65,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Json(await _orderRepository.GetOrderById(id));
         }
 
+        [HttpGet]
         public async Task<IActionResult> GetFullOrderInfoById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -75,6 +76,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 DesiredDate = order.DesiredDate,
                 Wishes = order.Wishes,
                 IsPaid = order.IsPaid,
+                DishesId = new List<int>()
             };
 
             foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
