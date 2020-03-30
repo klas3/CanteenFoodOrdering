@@ -133,6 +133,20 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+        {
+            var result = await _userManager.ChangePasswordAsync(await _userManager.GetUserAsync(User), model.OldPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return Problem();
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetUserRole()
