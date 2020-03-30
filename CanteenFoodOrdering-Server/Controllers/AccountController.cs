@@ -155,12 +155,16 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAuthorizedUserInfo()
         {
-            var user = await _userManager.GetUserAsync(User);
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
 
-            return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
+                return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
+            }
+
+            return NotFound();
         }
     }
 }
