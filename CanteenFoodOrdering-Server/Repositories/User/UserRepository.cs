@@ -19,6 +19,11 @@ namespace CanteenFoodOrdering_Server.Repositories
             _userManager = userManager;
         }
 
+        public async Task<bool> IsUserNameUnique(string username)
+        {
+            return await _context.Users.SingleOrDefaultAsync(user => user.UserName == username) == null;
+        }
+
         public async Task<bool> IsEmailUnique(string email)
         {
             return await _context.Users.SingleOrDefaultAsync(user => user.Email == email) == null;

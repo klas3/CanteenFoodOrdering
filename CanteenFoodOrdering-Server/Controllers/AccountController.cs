@@ -62,59 +62,66 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 if (await _userRepository.IsEmailUnique(viewModel.Email))
                 {
-                    IdentityUser user = new IdentityUser
+                    if (await _userRepository.IsUserNameUnique(viewModel.Login))
                     {
-                        UserName = viewModel.Login,
-                        Email = viewModel.Email
-                    };
+                        IdentityUser user = new IdentityUser
+                        {
+                            UserName = viewModel.Login,
+                            Email = viewModel.Email
+                        };
 
-                    var createUserResult = await _userManager.CreateAsync(user, viewModel.Password);
+                        var createUserResult = await _userManager.CreateAsync(user, viewModel.Password);
 
-                    if (createUserResult.Succeeded)
-                    {
-                        if (!await _roleManager.RoleExistsAsync("Customer"))
+                        if (createUserResult.Succeeded)
                         {
-                            await _roleManager.CreateAsync(new IdentityRole("Administrator"));
-                            await _roleManager.CreateAsync(new IdentityRole("Cook"));
-                            await _roleManager.CreateAsync(new IdentityRole("Сashier"));
-                            await _roleManager.CreateAsync(new IdentityRole("Customer"));
-                        }
+                            if (!await _roleManager.RoleExistsAsync("Customer"))
+                            {
+                                await _roleManager.CreateAsync(new IdentityRole("Administrator"));
+                                await _roleManager.CreateAsync(new IdentityRole("Cook"));
+                                await _roleManager.CreateAsync(new IdentityRole("Сashier"));
+                                await _roleManager.CreateAsync(new IdentityRole("Customer"));
+                            }
 
-                        if(viewModel.Role == "Administrator")
-                        {
-                            await _userManager.AddToRoleAsync(user, "Administrator");
-                        }
-                        else if (viewModel.Role == "Cook" && User.IsInRole("Administrator"))
-                        {
-                            await _userManager.AddToRoleAsync(user, "Cook");
-                        }
-                        else if (viewModel.Role == "Cashier" && User.IsInRole("Administrator"))
-                        {
-                            await _userManager.AddToRoleAsync(user, "Cashier");
+                            if(viewModel.Role == "Administrator")
+                            {
+                                await _userManager.AddToRoleAsync(user, "Administrator");
+                            }
+                            else if (viewModel.Role == "Cook" && User.IsInRole("Administrator"))
+                            {
+                                await _userManager.AddToRoleAsync(user, "Cook");
+                            }
+                            else if (viewModel.Role == "Cashier" && User.IsInRole("Administrator"))
+                            {
+                                await _userManager.AddToRoleAsync(user, "Cashier");
+                            }
+                            else
+                            {
+                                await _userManager.AddToRoleAsync(user, "Customer");
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(user.Email))
+                            {
+                                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
+                            }
+
+                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, viewModel.RememberMe, false);
+
+                            if (signInUserResult.Succeeded)
+                            {
+                                return Ok();
+                            }
                         }
                         else
                         {
-                            await _userManager.AddToRoleAsync(user, "Customer");
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(user.Email))
-                        {
-                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
-                        }
-
-                        var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, viewModel.RememberMe, false);
-
-                        if (signInUserResult.Succeeded)
-                        {
-                            return Ok();
+                            foreach (var error in createUserResult.Errors)
+                            {
+                                ModelState.AddModelError("", error.Description);
+                            }
                         }
                     }
                     else
                     {
-                        foreach (var error in createUserResult.Errors)
-                        {
-                            ModelState.AddModelError("", error.Description);
-                        }
+                        ModelState.AddModelError("", $"Логін {viewModel.Login} вже зайнятий");
                     }
                 }
                 else
