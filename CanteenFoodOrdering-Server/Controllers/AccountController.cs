@@ -155,6 +155,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAuthorizedUserInfo()
         {
             var user = await _userManager.GetUserAsync(User);
