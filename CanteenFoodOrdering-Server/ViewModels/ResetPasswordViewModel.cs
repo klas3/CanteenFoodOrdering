@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace CanteenFoodOrdering_Server.ViewModels
 {
-    public class LoginViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
-        public string Login { get; set; }
-        [Required]
-        public string Password { get; set; }
-        public bool RememberMe { get; set; }
+        public string Email { get; set; }
     }
 }

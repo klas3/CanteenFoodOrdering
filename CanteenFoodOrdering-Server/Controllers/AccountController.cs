@@ -17,19 +17,22 @@ namespace CanteenFoodOrdering_Server.Controllers
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private IUserRepository _userRepository;
+        private IEmailSender _emailSender;
 
         public AccountController
         (
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IEmailSender emailSender
         )
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
             _userRepository = userRepository;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
@@ -141,6 +144,25 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (result.Succeeded)
             {
+                return Ok();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                string newPassword = _userRepository.GenerateRandomKey();
+                string newPasswordHash = _userManager.PasswordHasher.HashPassword(user, newPassword);
+
+                await _userRepository.ChangePasswordHash(user, newPasswordHash);
+                await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Використайте для логіна наступний тимчасной пароль {newPassword}");
+
                 return Ok();
             }
 

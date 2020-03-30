@@ -8,11 +8,11 @@ namespace CanteenFoodOrdering_Server.ViewModels
 {
     public class RegisterUserViewModel
     {
-        [Required(ErrorMessage = "Поле Email обов'язкове.")]
+        [Required]
         public string Email { get; set; }
-        [Required(ErrorMessage = "Поле Логін обов'язкове.")]
+        [Required]
         public string Login { get; set; }
-        [Required(ErrorMessage = "Поле Пароль обов'язкове.")]
+        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         public string Role { get; set; }

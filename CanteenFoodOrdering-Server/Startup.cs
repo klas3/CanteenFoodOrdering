@@ -37,6 +37,7 @@ namespace CanteenFoodOrdering_Server
             services.AddScoped<IDishRepository, DishRepository>();
             services.AddScoped<IOrderedDishRepository, OrderedDishRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
