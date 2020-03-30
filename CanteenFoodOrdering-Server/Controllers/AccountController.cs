@@ -127,7 +127,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
         {
             var result = await _userManager.ChangePasswordAsync(await _userManager.GetUserAsync(User), model.OldPassword, model.NewPassword);
@@ -141,7 +140,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetUserRole()
         {
             string roleName = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User))).FirstOrDefault();
@@ -155,7 +153,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAuthorizedUserInfo()
         {
             var user = await _userManager.GetUserAsync(User);
