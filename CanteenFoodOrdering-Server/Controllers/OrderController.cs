@@ -31,6 +31,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)
@@ -111,6 +112,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Cashier")]
         public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
