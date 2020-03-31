@@ -22,7 +22,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Cook")]
         public async Task<IActionResult> CreateDish([FromBody] Dish dish)
         {
             if (ModelState.IsValid)
