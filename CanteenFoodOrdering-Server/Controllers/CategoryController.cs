@@ -41,5 +41,12 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             return Json(await _categoryRepository.GetCategoryById(id));
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Cook, Cashier")]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            return Json(await _categoryRepository.GetCategories());
+        }
     }
 }

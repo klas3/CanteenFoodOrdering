@@ -10,5 +10,6 @@ namespace CanteenFoodOrdering_Server.Repositories
     {
         Task CreateCategory(Category category);
         Task<Category> GetCategoryById(int id);
+        Task<List<Category>> GetCategories();
     }
 }

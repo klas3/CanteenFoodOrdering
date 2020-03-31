@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize(Roles = "Cook, Cashier")]
+    //[Authorize]
     public class OrderController : Controller
     {
         private IOrderRepository _orderRepository;
@@ -66,6 +66,12 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllOrdersInfo()
+        {
+            return Json(await _orderRepository.GetOrders());
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetFullOrderInfoById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -85,6 +91,32 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Json(fullOrder);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllFullOrdersInfo()
+        {
+            List<Order> orders = await _orderRepository.GetOrders();
+            List<FullOrderViewModel> models = new List<FullOrderViewModel>();
+
+            for (int i = 0; i < orders.Count; i++)
+            {
+                models.Add(new FullOrderViewModel
+                {
+                    CreationDate = orders[i].CreationDate,
+                    DesiredDate = orders[i].DesiredDate,
+                    Wishes = orders[i].Wishes,
+                    IsPaid = orders[i].IsPaid,
+                    DishesId = new List<int>()
+                });
+
+                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(i + 1))
+                {
+                    models[i].DishesId.Add(orderedDish.DishId);
+                }
+            }
+
+            return Json(models);
         }
 
         [HttpPost]
