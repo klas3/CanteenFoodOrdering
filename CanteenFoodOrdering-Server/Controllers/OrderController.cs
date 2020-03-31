@@ -72,22 +72,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                 DesiredDate = order.DesiredDate,
                 Wishes = order.Wishes,
                 IsPaid = order.IsPaid,
-                Dishes = new List<DishViewModel>()
+                Dishes = new List<Dish>()
             };
 
             foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
             {
-                Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
-
-                fullOrder.Dishes.Add(new DishViewModel 
-                {
-                    DishId = dish.DishId,
-                    Name = dish.Name,
-                    CategoryId = dish.CategoryId,
-                    Cost = dish.Cost,
-                    Description = dish.Description,
-                    Photo = Encoding.ASCII.GetString(dish.Photo)
-                });
+                fullOrder.Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
             }
 
             return Json(fullOrder);
@@ -108,22 +98,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                     DesiredDate = orders[i].DesiredDate,
                     Wishes = orders[i].Wishes,
                     IsPaid = orders[i].IsPaid,
-                    Dishes = new List<DishViewModel>()
+                    Dishes = new List<Dish>()
                 });
 
                 foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(i + 1))
                 {
-                    Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
-
-                    models[i].Dishes.Add(new DishViewModel
-                    {
-                        DishId = dish.DishId,
-                        Name = dish.Name,
-                        CategoryId = dish.CategoryId,
-                        Cost = dish.Cost,
-                        Description = dish.Description,
-                        Photo = Encoding.ASCII.GetString(dish.Photo)
-                    });
+                    models[i].Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
                 }
             }
 

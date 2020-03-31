@@ -22,18 +22,11 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDish([FromBody] DishViewModel dish)
+        public async Task<IActionResult> CreateDish([FromBody] Dish dish)
         {
             if (ModelState.IsValid)
             {
-                await _dishRepository.CreateDish(new Dish
-                {
-                    CategoryId = dish.CategoryId,
-                    Name = dish.Name,
-                    Cost = dish.Cost,
-                    Description = dish.Description,
-                    Photo = Encoding.ASCII.GetBytes(dish.Photo)
-                });
+                await _dishRepository.CreateDish(dish);
 
                 return Ok();
             }
