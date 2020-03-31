@@ -11,7 +11,7 @@ using CanteenFoodOrdering_Server.ViewModels;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize(Roles = "Cook, Cashier")]
+    [Authorize]
     public class DishController : Controller
     {
         private IDishRepository _dishRepository;
@@ -22,6 +22,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> CreateDish([FromBody] Dish dish)
         {
             if (ModelState.IsValid)
@@ -42,6 +43,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Cook, Cashier")]
         public async Task<IActionResult> GetAllDishes()
         {
             return Json(await _dishRepository.GetDishes());
