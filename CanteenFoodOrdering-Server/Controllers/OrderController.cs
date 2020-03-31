@@ -16,20 +16,17 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderRepository _orderRepository;
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
-        private ICategoryRepository _categoryRepository;
 
         public OrderController
         (
             IOrderRepository orderRepository,
             IOrderedDishRepository orderedDishRepository,
-            IDishRepository dishRepository,
-            ICategoryRepository categoryRepository
+            IDishRepository dishRepository
         )
         {
             _orderRepository = orderRepository;
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
-            _categoryRepository = categoryRepository;
         }
 
         [HttpPost]
@@ -85,7 +82,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     DishId = dish.DishId,
                     Name = dish.Name,
-                    CategoryName = (await _categoryRepository.GetCategoryById(dish.CategoryId)).Name,
+                    CategoryName = dish.Category.Name,
                     Cost = dish.Cost,
                     Description = dish.Description
                 });
@@ -120,7 +117,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     {
                         DishId = dish.DishId,
                         Name = dish.Name,
-                        CategoryName = (await _categoryRepository.GetCategoryById(dish.CategoryId)).Name,
+                        CategoryName = dish.Category.Name,
                         Cost = dish.Cost,
                         Description = dish.Description
                     });

@@ -31,7 +31,10 @@ namespace CanteenFoodOrdering_Server.Repositories
 
         public async Task<Dish> GetDishById(int id)
         {
-            return await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
+            return await _context.Dishes
+                .Where(dish => dish.DishId == id)
+                .Include(dish => dish.Category)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<List<Dish>> GetDishes()
