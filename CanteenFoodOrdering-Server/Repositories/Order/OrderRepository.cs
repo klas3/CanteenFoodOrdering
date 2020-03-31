@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Data;
 using CanteenFoodOrdering_Server.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CanteenFoodOrdering_Server.Repositories

@@ -43,7 +43,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Cook, Cashier")]
+        [Authorize]
         public async Task<IActionResult> GetAllCategories()
         {
             return Json(await _categoryRepository.GetCategories());
