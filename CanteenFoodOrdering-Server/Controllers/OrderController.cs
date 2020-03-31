@@ -7,10 +7,11 @@ using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
 using CanteenFoodOrdering_Server.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize(Roles = "Cook, Cashier")]
+    [Authorize]
     public class OrderController : Controller
     {
         private IOrderRepository _orderRepository;
@@ -60,12 +61,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOrderInfoById(int id)
-        {
-            return Json(await _orderRepository.GetOrderById(id));
-        }
-
-        [HttpGet]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetFullOrderInfoById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -76,15 +72,42 @@ namespace CanteenFoodOrdering_Server.Controllers
                 DesiredDate = order.DesiredDate,
                 Wishes = order.Wishes,
                 IsPaid = order.IsPaid,
-                DishesId = new List<int>()
+                Dishes = new List<Dish>()
             };
 
             foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
             {
-                fullOrder.DishesId.Add(orderedDish.DishId);
+                fullOrder.Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
             }
 
             return Json(fullOrder);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Cook, Cashier")]
+        public async Task<IActionResult> GetAllFullOrdersInfo()
+        {
+            List<Order> orders = await _orderRepository.GetOrders();
+            List<FullOrderViewModel> models = new List<FullOrderViewModel>();
+
+            for (int i = 0; i < orders.Count; i++)
+            {
+                models.Add(new FullOrderViewModel
+                {
+                    CreationDate = orders[i].CreationDate,
+                    DesiredDate = orders[i].DesiredDate,
+                    Wishes = orders[i].Wishes,
+                    IsPaid = orders[i].IsPaid,
+                    Dishes = new List<Dish>()
+                });
+
+                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(i + 1))
+                {
+                    models[i].Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
+                }
+            }
+
+            return Json(models);
         }
 
         [HttpPost]

@@ -33,5 +33,10 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
         }
+
+        public async Task<List<Dish>> GetDishes()
+        {
+            return await _context.Dishes.ToListAsync();
+        }
     }
 }

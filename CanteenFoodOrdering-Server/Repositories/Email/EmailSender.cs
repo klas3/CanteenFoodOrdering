@@ -47,7 +47,6 @@ namespace CanteenFoodOrdering_Server.Repositories
             {
                 try
                 {
-                    // during development
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
 

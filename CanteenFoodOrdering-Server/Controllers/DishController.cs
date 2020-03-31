@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using CanteenFoodOrdering_Server.ViewModels;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -24,13 +26,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _dishRepository.CreateDish(new Dish
-                {
-                    CategoryId = dish.CategoryId,
-                    Name = dish.Name,
-                    Cost = dish.Cost,
-                    Description = dish.Description
-                });
+                await _dishRepository.CreateDish(dish);
 
                 return Ok();
             }
@@ -43,6 +39,13 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task<IActionResult> GetDishById(int id)
         {
             return Json(await _dishRepository.GetDishById(id));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAllDishes()
+        {
+            return Json(await _dishRepository.GetDishes());
         }
     }
 }
