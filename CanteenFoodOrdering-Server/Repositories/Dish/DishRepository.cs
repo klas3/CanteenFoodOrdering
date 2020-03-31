@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using CanteenFoodOrdering_Server.ViewModels;
 
 namespace CanteenFoodOrdering_Server.Repositories
 {
@@ -29,17 +31,41 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Dish> GetDishById(int id)
+        public async Task<DishViewModel> GetDishById(int id)
         {
-            return await _context.Dishes
-                .Where(dish => dish.DishId == id)
-                .Include(dish => dish.Category)
-                .SingleOrDefaultAsync();
+            Dish dish = await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
+
+            return new DishViewModel
+            {
+                DishId = dish.DishId,
+                CategoryId = dish.CategoryId,
+                Name = dish.Name,
+                Cost = dish.Cost,
+                Description = dish.Description,
+                Photo = Encoding.ASCII.GetString(dish.Photo)
+            };
         }
 
-        public async Task<List<Dish>> GetDishes()
+        public async Task<List<DishViewModel>> GetDishes()
         {
-            return await _context.Dishes.ToListAsync();
+            List<DishViewModel> dishes = new List<DishViewModel>();
+
+            (await _context.Dishes.ToListAsync()).ForEach(dish =>
+            {
+                DishViewModel dishModel = new DishViewModel
+                {
+                    DishId = dish.DishId,
+                    CategoryId = dish.CategoryId,
+                    Name = dish.Name,
+                    Cost = dish.Cost,
+                    Description = dish.Description,
+                    Photo = Encoding.ASCII.GetString(dish.Photo)
+                };
+
+                dishes.Add(dishModel);
+            });
+
+            return dishes;
         }
     }
 }
