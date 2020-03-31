@@ -46,7 +46,23 @@ namespace CanteenFoodOrdering_Server.Controllers
         [Authorize(Roles = "Cook, Cashier, Customer")]
         public async Task<IActionResult> GetAllDishes()
         {
-            return Json(await _dishRepository.GetDishes());
+            List<DishInfoViewModel> dishes = new List<DishInfoViewModel>();
+
+            (await _dishRepository.GetDishes()).ForEach(dish =>
+            {
+                dishes.Add(new DishInfoViewModel 
+                {
+                    DishId = dish.DishId,
+                    CategoryName = dish.Category.Name,
+                    Name = dish.Name,
+                    Cost = dish.Cost,
+                    Description = dish.Description,
+                    Photo = dish.Photo,
+                    ImageMimeType = dish.ImageMimeType
+                });
+            });
+
+            return Json(dishes);
         }
     }
 }
