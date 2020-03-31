@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Models;
+using CanteenFoodOrdering_Server.ViewModels;
 
 namespace CanteenFoodOrdering_Server.Repositories
 {

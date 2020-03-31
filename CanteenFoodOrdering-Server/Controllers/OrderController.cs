@@ -7,6 +7,7 @@ using CanteenFoodOrdering_Server.Models;
 using CanteenFoodOrdering_Server.Repositories;
 using CanteenFoodOrdering_Server.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -82,9 +83,10 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     DishId = dish.DishId,
                     Name = dish.Name,
-                    CategoryName = dish.Category.Name,
+                    CategoryId = dish.CategoryId,
                     Cost = dish.Cost,
-                    Description = dish.Description
+                    Description = dish.Description,
+                    Photo = Encoding.ASCII.GetString(dish.Photo)
                 });
             }
 
@@ -117,9 +119,10 @@ namespace CanteenFoodOrdering_Server.Controllers
                     {
                         DishId = dish.DishId,
                         Name = dish.Name,
-                        CategoryName = dish.Category.Name,
+                        CategoryId = dish.CategoryId,
                         Cost = dish.Cost,
-                        Description = dish.Description
+                        Description = dish.Description,
+                        Photo = Encoding.ASCII.GetString(dish.Photo)
                     });
                 }
             }
