@@ -25,9 +25,7 @@ namespace CanteenFoodOrdering_Server.Repositories
 
         public async Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id)
         {
-            return await _context.OrderedDishes.Include(orderedDish => orderedDish.Order)
-                .Where(orderedDish => orderedDish.Order.OrderId == id)
-                .ToListAsync();
+            return await _context.OrderedDishes.Where(orderedDish => orderedDish.OrderId == id).ToListAsync();
         }
     }
 }
