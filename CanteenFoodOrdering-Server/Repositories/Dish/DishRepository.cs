@@ -36,7 +36,7 @@ namespace CanteenFoodOrdering_Server.Repositories
 
         public async Task<List<Dish>> GetDishes()
         {
-            return await _context.Dishes.ToListAsync();
+            return await _context.Dishes.Include(d => d.Category).ToListAsync();
         }
     }
 }
