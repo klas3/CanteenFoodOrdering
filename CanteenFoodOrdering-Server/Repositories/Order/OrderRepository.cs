@@ -24,6 +24,12 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateOrder(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             return await _context.Orders.SingleOrDefaultAsync(order => order.OrderId == id);
@@ -32,12 +38,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         public async Task<List<Order>> GetOrders()
         {
             return await _context.Orders.ToListAsync();
-        }
-
-        public async Task UpdateOrder(Order order)
-        {
-            _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
         }
     }
 }

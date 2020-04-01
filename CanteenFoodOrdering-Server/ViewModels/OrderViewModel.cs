@@ -13,6 +13,6 @@ namespace CanteenFoodOrdering_Server.ViewModels
         public string DesiredDate { get; set; }
         public string Wishes { get; set; }
         [Required]
-        public IEnumerable<int> DishesId { get; set; }
+        public IEnumerable<DishCountViewModel> Dishes { get; set; }
     }
 }

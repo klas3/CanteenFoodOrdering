@@ -35,6 +35,24 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem();
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> UpdateDishesCount([FromBody] DishCountViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Dish dish = await _dishRepository.GetDishById(model.DishId);
+
+                dish.Count += model.Count;
+
+                await _dishRepository.UpdateDish(dish);
+
+                return Ok();
+            }
+
+            return Problem();
+        }
+
         [HttpGet]
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetDishById(int id)
@@ -59,7 +77,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     Cost = dish.Cost,
                     Description = dish.Description,
                     Photo = dish.Photo,
-                    ImageMimeType = dish.ImageMimeType
+                    ImageMimeType = dish.ImageMimeType,
+                    Count = dish.Count
                 });
             });
 

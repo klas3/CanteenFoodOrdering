@@ -44,15 +44,31 @@ namespace CanteenFoodOrdering_Server.Controllers
                     IsPaid = false
                 };
 
+                foreach (DishCountViewModel dishToOrder in model.Dishes)
+                {
+                    Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
+
+                    if (dishToOrder.Count > dish.Count)
+                    {
+                        return Problem($"Недостатня кількість страви: {dish.Name}. Вибрано: {dishToOrder.Count}. В наявності: {dish.Count}");
+                    }
+                }
+
                 await _orderRepository.CreateOrder(order);
 
-                foreach (int dishId in model.DishesId)
+                foreach (DishCountViewModel dishToOrder in model.Dishes)
                 {
+                    Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
+
                     await _orderedDishRepository.CreateOrderedDish(new OrderedDish
                     {
                         OrderId = order.OrderId,
-                        DishId = dishId
+                        DishId = dishToOrder.DishId
                     });
+
+                    dish.Count -= dishToOrder.Count;
+
+                    await _dishRepository.UpdateDish(dish);
                 }
 
                 return Ok();

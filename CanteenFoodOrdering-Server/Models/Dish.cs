@@ -14,6 +14,7 @@ namespace CanteenFoodOrdering_Server.Models
         public string Description { get; set; }
         public string Photo { get; set; }
         public string ImageMimeType { get; set; }
+        public int Count { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual ICollection<OrderedDish> OrderedDishes { get; set; }
