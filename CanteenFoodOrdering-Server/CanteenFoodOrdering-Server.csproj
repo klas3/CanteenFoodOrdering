@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>CanteenFoodOrdering_Server</RootNamespace>
+    <UserSecretsId>69d6ef64-e608-4e58-952f-32680dfeb58b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
