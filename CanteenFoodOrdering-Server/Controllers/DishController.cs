@@ -53,6 +53,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 dishes.Add(new DishInfoViewModel 
                 {
                     DishId = dish.DishId,
+                    CategoryId = dish.CategoryId,
                     CategoryName = dish.Category.Name,
                     Name = dish.Name,
                     Cost = dish.Cost,

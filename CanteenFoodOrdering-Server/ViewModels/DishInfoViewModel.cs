@@ -8,6 +8,7 @@ namespace CanteenFoodOrdering_Server.ViewModels
     public class DishInfoViewModel
     {
         public int DishId { get; set; }
+        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         public string Name { get; set; }
         public float Cost { get; set; }
