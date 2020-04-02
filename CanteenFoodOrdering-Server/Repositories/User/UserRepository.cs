@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CanteenFoodOrdering_Server.Data;
+using CanteenFoodOrdering_Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +12,9 @@ namespace CanteenFoodOrdering_Server.Repositories
     public class UserRepository : IUserRepository
     {
         private Context _context;
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<User> _userManager;
 
-        public UserRepository(Context context, UserManager<IdentityUser> userManager)
+        public UserRepository(Context context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -34,7 +35,7 @@ namespace CanteenFoodOrdering_Server.Repositories
             return (await _userManager.FindByIdAsync(id)).Email;
         }
 
-        public async Task ChangePasswordHash(IdentityUser user, string newPasswordHash)
+        public async Task ChangePasswordHash(User user, string newPasswordHash)
         {
             user.PasswordHash = newPasswordHash;
             await _context.SaveChangesAsync();

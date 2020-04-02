@@ -24,7 +24,8 @@ namespace CanteenFoodOrdering_Server.Repositories
             {
                 Name = dish.Name,
                 Cost = dish.Cost,
-                Description = dish.Description
+                Description = dish.Description,
+                Count = 0
             });
             await _context.SaveChangesAsync();
         }
@@ -35,9 +36,23 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateDishHistory(DishHistory dish)
+        {
+            _context.DishHistories.Update(dish);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Dish> GetDishById(int id)
         {
-            return await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
+            return await _context.Dishes
+                .Where(dish => dish.DishId == id)
+                .Include(dish => dish.Category)
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<DishHistory> GetDishHistoryById(int id)
+        {
+            return await _context.DishHistories.SingleOrDefaultAsync(dishHistory => dishHistory.DishHistoryId == id);
         }
 
         public async Task<List<Dish>> GetDishes()

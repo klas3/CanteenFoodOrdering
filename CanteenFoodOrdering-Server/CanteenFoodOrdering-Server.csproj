@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200402100457_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402100457_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402100648_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402100648_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402101458_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402101458_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402102440_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402102440_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402102809_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402102809_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402103006_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402103006_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402103059_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402103059_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+    <Compile Remove="Migrations\20200402103400_AddUserModelAndUserRealationWithOrder.cs" />
+    <Compile Remove="Migrations\20200402103400_AddUserModelAndUserRealationWithOrder.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="2.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />

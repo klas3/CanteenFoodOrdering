@@ -8,21 +8,22 @@ using CanteenFoodOrdering_Server.ViewModels;
 using System.Security.Claims;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using CanteenFoodOrdering_Server.Models;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
     public class AccountController : Controller
     {
-        private SignInManager<IdentityUser> _signInManager;
-        private UserManager<IdentityUser> _userManager;
+        private SignInManager<User> _signInManager;
+        private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private IUserRepository _userRepository;
         private IEmailSender _emailSender;
 
         public AccountController
         (
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<User> signInManager,
+            UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
             IEmailSender emailSender
@@ -67,7 +68,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     if (await _userRepository.IsUserNameUnique(viewModel.Login))
                     {
-                        IdentityUser user = new IdentityUser
+                        User user = new User
                         {
                             UserName = viewModel.Login,
                             Email = viewModel.Email

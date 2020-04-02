@@ -8,10 +8,11 @@ namespace CanteenFoodOrdering_Server.ViewModels
 {
     public class FullOrderViewModel
     {
+        public string UserId { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime DesiredDate { get; set; }
         public string Wishes { get; set; }
         public bool IsPaid { get; set; }
-        public List<Dish> Dishes { get; set; }
+        public List<DishInfoViewModel> Dishes { get; set; }
     }
 }

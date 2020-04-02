@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using CanteenFoodOrdering_Server.Models;
 
 namespace CanteenFoodOrdering_Server
 {
@@ -39,7 +40,7 @@ namespace CanteenFoodOrdering_Server
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 7;
