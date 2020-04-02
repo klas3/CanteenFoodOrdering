@@ -53,6 +53,22 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem();
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> DeleteDishById(int id)
+        {
+            Dish dish = await _dishRepository.GetDishById(id);
+
+            if (dish != null)
+            {
+                await _dishRepository.DeleteDish(dish);
+
+                return Ok();
+            }
+
+            return Problem();
+        }
+
         [HttpGet]
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetDishById(int id)

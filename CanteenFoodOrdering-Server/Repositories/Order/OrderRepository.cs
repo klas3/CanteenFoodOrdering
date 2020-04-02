@@ -30,6 +30,12 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteOrder(Order order)
+        {
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             return await _context.Orders.SingleOrDefaultAsync(order => order.OrderId == id);
