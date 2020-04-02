@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    //[Authorize(Roles = "Cook")]
+    [Authorize(Roles = "Cook")]
     public class CategoryController : Controller
     {
         private ICategoryRepository _categoryRepository;
