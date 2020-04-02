@@ -180,5 +180,38 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> ArchiveOrderById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                OrderHistory orderHistory = new OrderHistory
+                {
+                    CreationDate = order.CreationDate,
+                    DesiredDate = order.DesiredDate,
+                    Wishes = order.Wishes,
+                    IsPaid = order.IsPaid
+                };
+
+                await _orderRepository.CreateOrderHistory(orderHistory);
+
+                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
+                {
+                    await _orderedDishRepository.CreateOrderedDishHistory(new OrderedDishHistory
+                    {
+                        OrderHistoryId = orderHistory.OrderHistoryId,
+                        DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId
+                    });
+                }
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace CanteenFoodOrdering_Server.Repositories
     public interface IOrderedDishRepository
     {
         Task CreateOrderedDish(OrderedDish orderedDish);
+        Task CreateOrderedDishHistory(OrderedDishHistory orderedDish);
         Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id);
     }
 }

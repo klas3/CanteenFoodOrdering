@@ -23,6 +23,12 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task CreateOrderedDishHistory(OrderedDishHistory orderedDish)
+        {
+            await _context.OrderedDishHistories.AddAsync(orderedDish);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id)
         {
             return await _context.OrderedDishes.Where(orderedDish => orderedDish.OrderId == id).ToListAsync();
