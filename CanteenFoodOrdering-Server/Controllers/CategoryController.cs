@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize(Roles = "Cook")]
+    //[Authorize(Roles = "Cook")]
     public class CategoryController : Controller
     {
         private ICategoryRepository _categoryRepository;
@@ -33,6 +33,21 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategoryById(int id)
+        {
+            Category category = await _categoryRepository.GetCategoryById(id);
+
+            if (category != null)
+            {
+                await _categoryRepository.DeleteCategory(category);
+
+                return Ok();
+            }
+
+            return NotFound();
         }
     }
 }

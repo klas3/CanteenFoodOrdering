@@ -54,7 +54,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Cook")]
         public async Task<IActionResult> DeleteDishById(int id)
         {
             Dish dish = await _dishRepository.GetDishById(id);
@@ -66,7 +65,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 return Ok();
             }
 
-            return Problem();
+            return NotFound();
         }
 
         [HttpGet]
