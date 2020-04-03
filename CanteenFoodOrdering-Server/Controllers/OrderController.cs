@@ -83,75 +83,41 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> GetAllCustomerOrdersInfo()
+        [Authorize(Roles = "Customer, Cashier, Cook")]
+        public async Task<IActionResult> GetCustomerFullOrderInfoById(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                if (order.UserId == user.Id || User.IsInRole("Cook"))
+                {
+                    return Json(await GetAllFullOrderInfoByOrder(order));
+                }
+
+                return NotFound();
+            }
+
+            return NotFound();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Customer, Cashier")]
+        public async Task<IActionResult> GetCustomerAllFullOrdersInfo()
         {
             var user = await _userManager.GetUserAsync(User);
             List<Order> orders = await _orderRepository.GetCustomerOders(user);
+            List<FullOrderViewModel> models = new List<FullOrderViewModel>();
 
             if (orders != null)
             {
-                return Json(orders);
-            }
-
-            return NotFound();
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Customer, Cashier, Cook")]
-        public async Task<IActionResult> GetOrderInfoById(int id)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            Order order = await _orderRepository.GetOrderById(id);
-
-            if (order != null)
-            {
-                if (order.UserId == user.Id || User.IsInRole("Cook"))
+                foreach (Order order in orders)
                 {
-                    return Json(order);
+                    models.Add(await GetAllFullOrderInfoByOrder(order));
                 }
 
-                return NotFound();
-            }
-
-            return NotFound();
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Customer, Cashier, Cook")]
-        public async Task<IActionResult> GetDishesByOrderId(int id)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            Order order = await _orderRepository.GetOrderById(id);
-
-            if (order != null)
-            {
-                if (order.UserId == user.Id || User.IsInRole("Cook"))
-                {
-                    List<DishInfoViewModel> orderDishes = new List<DishInfoViewModel>();
-
-                    foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
-                    {
-                        Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
-
-                        orderDishes.Add(new DishInfoViewModel
-                        {
-                            DishId = dish.DishId,
-                            CategoryId = dish.CategoryId,
-                            CategoryName = dish.Category.Name,
-                            Name = dish.Name,
-                            Cost = dish.Cost,
-                            Description = dish.Description,
-                            Photo = dish.Photo,
-                            ImageMimeType = dish.ImageMimeType,
-                            Count = dish.Count
-                        });
-                    }
-
-                    return Json(orderDishes);
-                }
-
-                return NotFound();
+                return Json(models);
             }
 
             return NotFound();
@@ -164,35 +130,9 @@ namespace CanteenFoodOrdering_Server.Controllers
             List<Order> orders = await _orderRepository.GetOrders();
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
 
-            for (int i = 0; i < orders.Count; i++)
+            foreach (Order order in orders)
             {
-                models.Add(new FullOrderViewModel
-                {
-                    UserId = orders[i].UserId,
-                    CreationDate = orders[i].CreationDate,
-                    DesiredDate = orders[i].DesiredDate,
-                    Wishes = orders[i].Wishes,
-                    IsPaid = orders[i].IsPaid,
-                    Dishes = new List<DishInfoViewModel>()
-                });
-
-                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(i + 1))
-                {
-                    Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
-
-                    models[i].Dishes.Add(new DishInfoViewModel
-                    {
-                        DishId = dish.DishId,
-                        CategoryId = dish.CategoryId,
-                        CategoryName = dish.Category.Name,
-                        Name = dish.Name,
-                        Cost = dish.Cost,
-                        Description = dish.Description,
-                        Photo = dish.Photo,
-                        ImageMimeType = dish.ImageMimeType,
-                        Count = dish.Count
-                    });
-                }
+                models.Add(await GetAllFullOrderInfoByOrder(order));
             }
 
             return Json(models);
@@ -247,6 +187,39 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return NotFound();
+        }
+
+        private async Task<FullOrderViewModel> GetAllFullOrderInfoByOrder(Order order)
+        {
+            FullOrderViewModel fullOrder = new FullOrderViewModel
+            {
+                UserId = order.UserId,
+                CreationDate = order.CreationDate,
+                DesiredDate = order.DesiredDate,
+                Wishes = order.Wishes,
+                IsPaid = order.IsPaid,
+                Dishes = new List<DishInfoViewModel>()
+            };
+
+            foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(order.OrderId))
+            {
+                Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
+
+                fullOrder.Dishes.Add(new DishInfoViewModel
+                {
+                    DishId = dish.DishId,
+                    CategoryId = dish.CategoryId,
+                    CategoryName = dish.Category.Name,
+                    Name = dish.Name,
+                    Cost = dish.Cost,
+                    Description = dish.Description,
+                    Photo = dish.Photo,
+                    ImageMimeType = dish.ImageMimeType,
+                    Count = dish.Count
+                });
+            }
+
+            return fullOrder;
         }
     }
 }
