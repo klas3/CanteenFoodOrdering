@@ -24,8 +24,7 @@ namespace CanteenFoodOrdering_Server.Repositories
             {
                 Name = dish.Name,
                 Cost = dish.Cost,
-                Description = dish.Description,
-                Count = 0
+                Description = dish.Description
             });
             await _context.SaveChangesAsync();
         }
