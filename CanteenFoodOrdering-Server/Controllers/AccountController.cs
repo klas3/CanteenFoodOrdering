@@ -133,7 +133,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
             }
 
-            return NotFound();
+            return Problem(ModelState.Values.FirstOrDefault()?.Errors.FirstOrDefault()?.ErrorMessage);
         }
 
         [HttpPost]
