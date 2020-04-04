@@ -144,5 +144,27 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrderById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                List<OrderedDish> orderedDishes = await _orderedDishRepository.GetOrderedDishesByOrderId(id);
+
+                foreach (OrderedDish orderedDish in orderedDishes)
+                {
+                    await _orderedDishRepository.DeleteOrderedDish(orderedDish);
+                }
+
+                await _orderRepository.DeleteOrder(order);
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }
