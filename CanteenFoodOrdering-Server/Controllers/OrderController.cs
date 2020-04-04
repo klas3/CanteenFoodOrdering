@@ -34,7 +34,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer, Cashier")]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)

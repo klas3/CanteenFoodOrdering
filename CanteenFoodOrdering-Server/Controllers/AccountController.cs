@@ -41,7 +41,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, loginModel.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, true, false);
                 if (result.Succeeded)
                 {
                     return Ok();
@@ -108,7 +108,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
                             }
 
-                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, viewModel.RememberMe, false);
+                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, true, false);
 
                             if (signInUserResult.Succeeded)
                             {
