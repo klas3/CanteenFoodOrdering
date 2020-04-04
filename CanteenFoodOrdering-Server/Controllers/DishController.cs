@@ -37,6 +37,30 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> UpdateDish([FromBody] UpdateDishViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Dish dish = await _dishRepository.GetDishById(model.DishId);
+
+                dish.CategoryId = model.CategoryId;
+                dish.Name = model.Name;
+                dish.Cost = model.Cost;
+                dish.Description = model.Description;
+                dish.Photo = model.Photo;
+                dish.ImageMimeType = model.ImageMimeType;
+                dish.Count = model.Count;
+
+                await _dishRepository.UpdateDish(dish);
+
+                return Ok();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
         public async Task<IActionResult> UpdateDishCount([FromBody] DishCountViewModel model)
         {
             if (ModelState.IsValid)
@@ -54,6 +78,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Cook")]
         public async Task<IActionResult> DeleteDishById(int id)
         {
             Dish dish = await _dishRepository.GetDishById(id);

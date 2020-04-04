@@ -152,16 +152,33 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                List<OrderedDish> orderedDishes = await _orderedDishRepository.GetOrderedDishesByOrderId(id);
 
-                foreach (OrderedDish orderedDish in orderedDishes)
+                if (User.IsInRole("Customer"))
                 {
-                    await _orderedDishRepository.DeleteOrderedDish(orderedDish);
+                    List<OrderedDish> orderedDishes = await _orderedDishRepository.GetOrderedDishesByOrderId(id);
+
+                    foreach (OrderedDish orderedDish in orderedDishes)
+                    {
+                        await _orderedDishRepository.DeleteOrderedDish(orderedDish);
+                    }
+
+                    await _orderRepository.DeleteOrder(order);
+
+                    return Ok();
                 }
+                else
+                {
+                    List<OrderedDish> orderedDishes = await _orderedDishRepository.GetOrderedDishesByOrderId(id);
 
-                await _orderRepository.DeleteOrder(order);
+                    foreach (OrderedDish orderedDish in orderedDishes)
+                    {
+                        await _orderedDishRepository.DeleteOrderedDish(orderedDish);
+                    }
 
-                return Ok();
+                    await _orderRepository.DeleteOrder(order);
+
+                    return Ok();
+                }
             }
 
             return NotFound();
