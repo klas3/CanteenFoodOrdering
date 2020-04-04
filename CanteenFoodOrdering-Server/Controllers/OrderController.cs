@@ -103,39 +103,28 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer, Cashier")]
-        public async Task<IActionResult> GetCustomerAllFullOrdersInfo()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            List<Order> orders = await _orderRepository.GetCustomerOders(user);
-            List<FullOrderViewModel> models = new List<FullOrderViewModel>();
-
-            if (orders != null)
-            {
-                foreach (Order order in orders)
-                {
-                    models.Add(await GetAllFullOrderInfoByOrder(order));
-                }
-
-                return Json(models);
-            }
-
-            return NotFound();
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Cook, Cashier")]
+        [Authorize(Roles = "Customer, Cashier, Cook")]
         public async Task<IActionResult> GetAllFullOrdersInfo()
         {
-            List<Order> orders = await _orderRepository.GetOrders();
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
 
-            foreach (Order order in orders)
+            if (User.IsInRole("Customer"))
             {
-                models.Add(await GetAllFullOrderInfoByOrder(order));
-            }
+                var user = await _userManager.GetUserAsync(User);
+                List<Order> orders = await _orderRepository.GetCustomerOders(user);
 
-            return Json(models);
+                if (orders != null)
+                {
+                    foreach (Order order in orders)
+                    {
+                        models.Add(await GetAllFullOrderInfoByOrder(order));
+                    }
+
+                    return Json(models);
+                }
+
+                return NotFound();
+            }
         }
 
         [HttpPost]
@@ -153,7 +142,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 return Ok();
             }
 
-            return Problem();
+            return NotFound();
         }
 
         [HttpPost]
