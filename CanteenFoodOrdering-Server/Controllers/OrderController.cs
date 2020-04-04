@@ -125,6 +125,17 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 return NotFound();
             }
+            else
+            {
+                List<Order> orders = await _orderRepository.GetOrders();
+
+                foreach (Order order in orders)
+                {
+                    models.Add(await GetAllFullOrderInfoByOrder(order));
+                }
+
+                return Json(models);
+            }
         }
 
         [HttpPost]
