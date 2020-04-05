@@ -27,6 +27,14 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (dish.Photo != null && dish.Photo != "")
+                {
+                    if (!VerifyDishPhotoSize(dish.Photo, 400))
+                    {
+                        return Problem($"Розмір картинки завелекий. Максимально допустимий розмір: 400 КБ");
+                    }
+                }
+
                 await _dishRepository.CreateDish(dish);
 
                 return Ok();
@@ -41,6 +49,14 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (model.Photo != null && model.Photo != "")
+                {
+                    if (!VerifyDishPhotoSize(model.Photo, 400))
+                    {
+                        return Problem($"Розмір картинки завелекий. Максимально допустимий розмір: 400 КБ");
+                    }
+                }
+
                 Dish dish = await _dishRepository.GetDishById(model.DishId);
 
                 dish.CategoryId = model.CategoryId;
@@ -117,5 +133,17 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Json(dishes);
         }
+        private bool VerifyDishPhotoSize(string photo, int size)
+        {
+            byte[] image = Convert.FromBase64String(photo);
+
+            if (photo.Length < size)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
+
 }
