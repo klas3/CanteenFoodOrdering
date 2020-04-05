@@ -28,6 +28,12 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.OrderedDishHistories.AddAsync(orderedDish);
             await _context.SaveChangesAsync();
         }
+        
+        public async Task DeleteOrderedDish(OrderedDish orderedDish)
+        {
+            _context.Remove(orderedDish);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id)
         {

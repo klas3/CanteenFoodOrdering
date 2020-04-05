@@ -40,6 +40,12 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.Orders.Where(order => order.UserId == customer.Id).ToListAsync();
         }
+        
+        public async Task DeleteOrder(Order order)
+        {
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<Order> GetOrderById(int id)
         {

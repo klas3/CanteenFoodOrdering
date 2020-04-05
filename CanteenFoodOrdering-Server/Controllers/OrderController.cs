@@ -222,5 +222,31 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return fullOrder;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrderById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+
+                if (User.IsInRole("Cashier"))
+                {
+                    await _orderRepository.DeleteOrder(order);
+
+                    return Ok();
+                }
+                else
+                {
+                    //Need to verify UserId in Order
+                    await _orderRepository.DeleteOrder(order);
+
+                    return Ok();
+                }
+            }
+
+            return NotFound();
+        }
     }
 }

@@ -34,5 +34,53 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            return Json(await _categoryRepository.GetAllCategories());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCategory([FromBody] Category category)
+        {
+            if (category.Name != null && category.Name != "")
+            {
+                Category categoryModel = await _categoryRepository.GetCategoryById(category.CategoryId);
+
+                if (categoryModel == null)
+                {
+                    return NotFound();
+                }
+
+                if (category.Name == categoryModel.Name)
+                {
+                    return Problem($"Категорія з назвою {category.Name} вже існує");
+                }
+
+                categoryModel.Name = category.Name;
+
+                await _categoryRepository.UpdateCategory(categoryModel);
+
+                return Ok();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategoryById(int id)
+        {
+            Category category = await _categoryRepository.GetCategoryById(id);
+
+            if (category != null)
+            {
+                await _categoryRepository.DeleteCategory(category);
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }

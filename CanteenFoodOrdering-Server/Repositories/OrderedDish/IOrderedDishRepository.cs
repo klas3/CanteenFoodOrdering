@@ -10,6 +10,7 @@ namespace CanteenFoodOrdering_Server.Repositories
     {
         Task CreateOrderedDish(OrderedDish orderedDish);
         Task CreateOrderedDishHistory(OrderedDishHistory orderedDish);
+        Task DeleteOrderedDish(OrderedDish orderedDish);
         Task<List<OrderedDish>> GetOrderedDishesByOrderId(int id);
     }
 }

@@ -34,10 +34,16 @@ namespace CanteenFoodOrdering_Server.Repositories
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
-
+        
         public async Task UpdateDishHistory(DishHistory dish)
         {
             _context.DishHistories.Update(dish);
+            await _context.SaveChangesAsync();
+        }
+        
+        public async Task DeleteDish(Dish dish)
+        {
+            _context.Dishes.Remove(dish);
             await _context.SaveChangesAsync();
         }
 
