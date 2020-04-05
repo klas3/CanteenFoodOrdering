@@ -12,5 +12,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task UpdateCategory(Category category);
         Task DeleteCategory(Category category);
         Task<Category> GetCategoryById(int id);
+        Task<List<Category>> GetAllCategories();
     }
 }
