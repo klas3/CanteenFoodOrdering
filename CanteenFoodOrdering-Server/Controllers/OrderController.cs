@@ -239,10 +239,16 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
                 else
                 {
-                    //Need to verify UserId in Order
-                    await _orderRepository.DeleteOrder(order);
+                    var user = await _userManager.GetUserAsync(User);
 
-                    return Ok();
+                    if (order.UserId == user.Id)
+                    {
+                        await _orderRepository.DeleteOrder(order);
+
+                        return Ok();
+                    }
+
+                    return NotFound();
                 }
             }
 
