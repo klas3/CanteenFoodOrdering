@@ -9,7 +9,6 @@ namespace CanteenFoodOrdering_Server.Repositories
     public interface ICategoryRepository
     {
         Task CreateCategory(Category category);
-        Task UpdateCategory(Category category);
         Task<Category> GetCategoryById(int id);
     }
 }

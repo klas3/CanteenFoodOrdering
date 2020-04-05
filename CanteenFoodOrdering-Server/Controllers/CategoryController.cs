@@ -34,27 +34,5 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateCategory([FromBody] Category category)
-        {
-            if (category.Name != null && category.Name != "")
-            {
-                Category categoryModel = await _categoryRepository.GetCategoryById(category.CategoryId);
-
-                if (categoryModel == null)
-                {
-                    return NotFound();
-                }
-
-                categoryModel.Name = category.Name;
-
-                await _categoryRepository.UpdateCategory(categoryModel);
-
-                return Ok();
-            }
-
-            return Problem();
-        }
     }
 }
