@@ -8,21 +8,22 @@ using CanteenFoodOrdering_Server.ViewModels;
 using System.Security.Claims;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using CanteenFoodOrdering_Server.Models;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
     public class AccountController : Controller
     {
-        private SignInManager<IdentityUser> _signInManager;
-        private UserManager<IdentityUser> _userManager;
+        private SignInManager<User> _signInManager;
+        private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private IUserRepository _userRepository;
         private IEmailSender _emailSender;
 
         public AccountController
         (
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<User> signInManager,
+            UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
             IEmailSender emailSender
@@ -40,7 +41,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, loginModel.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, true, false);
                 if (result.Succeeded)
                 {
                     return Ok();
@@ -67,7 +68,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     if (await _userRepository.IsUserNameUnique(viewModel.Login))
                     {
-                        IdentityUser user = new IdentityUser
+                        User user = new User
                         {
                             UserName = viewModel.Login,
                             Email = viewModel.Email
@@ -107,7 +108,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
                             }
 
-                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, viewModel.RememberMe, false);
+                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, true, false);
 
                             if (signInUserResult.Succeeded)
                             {
@@ -190,6 +191,17 @@ namespace CanteenFoodOrdering_Server.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
+        }
+
+        [HttpGet]
+        public bool CheckIfUserAlreadyAuthorized()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

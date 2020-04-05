@@ -8,30 +8,33 @@ using CanteenFoodOrdering_Server.Repositories;
 using CanteenFoodOrdering_Server.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
     [Authorize]
     public class OrderController : Controller
     {
+        private UserManager<User> _userManager;
         private IOrderRepository _orderRepository;
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
 
         public OrderController
-        (
+        (   UserManager<User> userManager,
             IOrderRepository orderRepository,
             IOrderedDishRepository orderedDishRepository,
             IDishRepository dishRepository
         )
         {
+            _userManager = userManager;
             _orderRepository = orderRepository;
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer")]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)
@@ -41,7 +44,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     CreationDate = DateTime.Now,
                     DesiredDate = DateTime.Parse(model.DesiredDate),
                     Wishes = model.Wishes,
-                    IsPaid = false
+                    IsPaid = false,
+                    UserId = (await _userManager.GetUserAsync(User)).Id
                 };
 
                 foreach (DishCountViewModel dishToOrder in model.Dishes)
@@ -63,7 +67,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     await _orderedDishRepository.CreateOrderedDish(new OrderedDish
                     {
                         OrderId = order.OrderId,
-                        DishId = dishToOrder.DishId
+                        DishId = dishToOrder.DishId,
+                        DishCount = dishToOrder.Count
                     });
 
                     dish.Count -= dishToOrder.Count;
@@ -78,49 +83,56 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> GetFullOrderInfoById(int id)
+        [Authorize(Roles = "Customer, Cashier, Cook")]
+        public async Task<IActionResult> GetCustomerFullOrderInfoById(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
             Order order = await _orderRepository.GetOrderById(id);
 
-            FullOrderViewModel fullOrder = new FullOrderViewModel
+            if (order != null)
             {
-                CreationDate = order.CreationDate,
-                DesiredDate = order.DesiredDate,
-                Wishes = order.Wishes,
-                IsPaid = order.IsPaid,
-                Dishes = new List<Dish>()
-            };
+                if (order.UserId == user.Id || User.IsInRole("Cook"))
+                {
+                    return Json(await GetAllFullOrderInfoByOrder(order));
+                }
 
-            foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
-            {
-                fullOrder.Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
+                return NotFound();
             }
 
-            return Json(fullOrder);
+            return NotFound();
         }
 
         [HttpGet]
-        [Authorize(Roles = "Cook, Cashier")]
         public async Task<IActionResult> GetAllFullOrdersInfo()
         {
-            List<Order> orders = await _orderRepository.GetOrders();
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
+            List<Order> orders;
 
-            for (int i = 0; i < orders.Count; i++)
+            if (User.IsInRole("Cashier"))
             {
-                models.Add(new FullOrderViewModel
-                {
-                    CreationDate = orders[i].CreationDate,
-                    DesiredDate = orders[i].DesiredDate,
-                    Wishes = orders[i].Wishes,
-                    IsPaid = orders[i].IsPaid,
-                    Dishes = new List<Dish>()
-                });
+                orders = await _orderRepository.GetOrders();
+            }
+            else
+            {
+                orders = await _orderRepository.GetCustomerOders(await _userManager.GetUserAsync(User));
 
-                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(i + 1))
+                if (orders == null)
                 {
-                    models[i].Dishes.Add(await _dishRepository.GetDishById(orderedDish.DishId));
+                    return NotFound();
+                }
+            }
+
+            foreach (Order order in orders)
+            {
+                models.Add(await GetAllFullOrderInfoByOrder(order));
+            }
+
+            foreach (FullOrderViewModel model in models)
+            {
+                foreach (DishInfoViewModel dishModel in model.Dishes)
+                {
+                    dishModel.Photo = null;
+                    dishModel.ImageMimeType = null;
                 }
             }
 
@@ -142,7 +154,73 @@ namespace CanteenFoodOrdering_Server.Controllers
                 return Ok();
             }
 
-            return Problem();
+            return NotFound();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> ArchiveOrderById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                OrderHistory orderHistory = new OrderHistory
+                {
+                    CreationDate = order.CreationDate,
+                    DesiredDate = order.DesiredDate,
+                    Wishes = order.Wishes,
+                    IsPaid = order.IsPaid
+                };
+
+                await _orderRepository.CreateOrderHistory(orderHistory);
+
+                foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
+                {
+                    await _orderedDishRepository.CreateOrderedDishHistory(new OrderedDishHistory
+                    {
+                        OrderHistoryId = orderHistory.OrderHistoryId,
+                        DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId
+                    });
+                }
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
+        private async Task<FullOrderViewModel> GetAllFullOrderInfoByOrder(Order order)
+        {
+            FullOrderViewModel fullOrder = new FullOrderViewModel
+            {
+                UserId = order.UserId,
+                CreationDate = order.CreationDate,
+                DesiredDate = order.DesiredDate,
+                Wishes = order.Wishes,
+                IsPaid = order.IsPaid,
+                Dishes = new List<DishInfoViewModel>()
+            };
+
+            foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(order.OrderId))
+            {
+                Dish dish = await _dishRepository.GetDishById(orderedDish.DishId);
+
+                fullOrder.Dishes.Add(new DishInfoViewModel
+                {
+                    DishId = dish.DishId,
+                    CategoryId = dish.CategoryId,
+                    CategoryName = dish.Category.Name,
+                    Name = dish.Name,
+                    Cost = dish.Cost,
+                    Description = dish.Description,
+                    Photo = dish.Photo,
+                    ImageMimeType = dish.ImageMimeType,
+                    Count = dish.Count
+                });
+            }
+
+            return fullOrder;
         }
 
         [HttpPost]

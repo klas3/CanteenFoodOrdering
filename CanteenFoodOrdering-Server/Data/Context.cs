@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CanteenFoodOrdering_Server.Data
 {
-    public class Context : IdentityDbContext<IdentityUser>
+    public class Context : IdentityDbContext<User>
     {
         public Context(DbContextOptions<Context> options) : base(options)
         {
         }
 
+        public DbSet<User> DBUsers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Dish> Dishes { get; set; }
         public DbSet<Category> Categories { get; set; }

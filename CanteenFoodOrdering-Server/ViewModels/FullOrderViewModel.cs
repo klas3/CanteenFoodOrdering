@@ -9,6 +9,7 @@ namespace CanteenFoodOrdering_Server.ViewModels
 {
     public class FullOrderViewModel
     {
+        public string UserId { get; set; }
         [Required]
         public int OrderId { get; set; }
         public DateTime CreationDate { get; set; }
@@ -17,6 +18,6 @@ namespace CanteenFoodOrdering_Server.ViewModels
         public string Wishes { get; set; }
         public bool IsPaid { get; set; }
         [Required]
-        public List<Dish> Dishes { get; set; }
+        public List<DishInfoViewModel> Dishes { get; set; }
     }
 }

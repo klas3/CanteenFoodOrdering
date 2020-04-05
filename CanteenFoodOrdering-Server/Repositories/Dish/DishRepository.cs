@@ -34,7 +34,13 @@ namespace CanteenFoodOrdering_Server.Repositories
             _context.Dishes.Update(dish);
             await _context.SaveChangesAsync();
         }
-
+        
+        public async Task UpdateDishHistory(DishHistory dish)
+        {
+            _context.DishHistories.Update(dish);
+            await _context.SaveChangesAsync();
+        }
+        
         public async Task DeleteDish(Dish dish)
         {
             _context.Dishes.Remove(dish);
@@ -43,7 +49,15 @@ namespace CanteenFoodOrdering_Server.Repositories
 
         public async Task<Dish> GetDishById(int id)
         {
-            return await _context.Dishes.SingleOrDefaultAsync(dish => dish.DishId == id);
+            return await _context.Dishes
+                .Where(dish => dish.DishId == id)
+                .Include(dish => dish.Category)
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<DishHistory> GetDishHistoryById(int id)
+        {
+            return await _context.DishHistories.SingleOrDefaultAsync(dishHistory => dishHistory.DishHistoryId == id);
         }
 
         public async Task<List<Dish>> GetDishes()

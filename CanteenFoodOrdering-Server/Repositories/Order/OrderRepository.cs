@@ -24,12 +24,23 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task CreateOrderHistory(OrderHistory order)
+        {
+            await _context.OrderHistories.AddAsync(order);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateOrder(Order order)
         {
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Order>> GetCustomerOders(User customer)
+        {
+            return await _context.Orders.Where(order => order.UserId == customer.Id).ToListAsync();
+        }
+        
         public async Task DeleteOrder(Order order)
         {
             _context.Orders.Remove(order);
