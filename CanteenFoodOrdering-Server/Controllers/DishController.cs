@@ -37,7 +37,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cook")]
-        public async Task<IActionResult> UpdateDish([FromBody] UpdateDishViewModel model)
+        public async Task<IActionResult> UpdateDish([FromBody] DishInfoViewModel model)
         {
             if (ModelState.IsValid)
             {
