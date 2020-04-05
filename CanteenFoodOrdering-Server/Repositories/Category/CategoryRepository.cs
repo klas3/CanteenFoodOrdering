@@ -22,5 +22,16 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateCategory(Category category)
+        {
+            _context.Categories.Update(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Category> GetCategoryById(int id)
+        {
+            return await _context.Categories.SingleOrDefaultAsync(category => category.CategoryId == id);
+        }
     }
 }

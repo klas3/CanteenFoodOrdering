@@ -103,39 +103,40 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer, Cashier, Cook")]
         public async Task<IActionResult> GetAllFullOrdersInfo()
         {
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
+            List<Order> orders;
 
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole("Cashier"))
             {
-                var user = await _userManager.GetUserAsync(User);
-                List<Order> orders = await _orderRepository.GetCustomerOders(user);
-
-                if (orders != null)
-                {
-                    foreach (Order order in orders)
-                    {
-                        models.Add(await GetAllFullOrderInfoByOrder(order));
-                    }
-
-                    return Json(models);
-                }
-
-                return NotFound();
+                orders = await _orderRepository.GetOrders();
             }
             else
             {
-                List<Order> orders = await _orderRepository.GetOrders();
+                orders = await _orderRepository.GetCustomerOders(await _userManager.GetUserAsync(User));
 
-                foreach (Order order in orders)
+                if (orders == null)
                 {
-                    models.Add(await GetAllFullOrderInfoByOrder(order));
+                    return NotFound();
                 }
-
-                return Json(models);
             }
+
+            foreach (Order order in orders)
+            {
+                models.Add(await GetAllFullOrderInfoByOrder(order));
+            }
+
+            foreach (FullOrderViewModel model in models)
+            {
+                foreach (DishInfoViewModel dishModel in model.Dishes)
+                {
+                    dishModel.Photo = null;
+                    dishModel.ImageMimeType = null;
+                }
+            }
+
+            return Json(models);
         }
 
         [HttpPost]

@@ -192,5 +192,16 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Json(new UserInfoViewModel { Email = user.Email, Login = user.UserName });
         }
+
+        [HttpGet]
+        public bool CheckIfUserAlreadyAuthorized()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
