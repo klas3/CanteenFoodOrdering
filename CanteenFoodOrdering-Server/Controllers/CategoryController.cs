@@ -34,5 +34,20 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategoryById(int id)
+        {
+            Category category = await _categoryRepository.GetCategoryById(id);
+
+            if (category != null)
+            {
+                await _categoryRepository.DeleteCategory(category);
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task<Dish> GetDishById(int id);
         Task<List<Dish>> GetDishes();
         Task UpdateDish(Dish dish);
+        Task DeleteDish(Dish dish);
     }
 }
