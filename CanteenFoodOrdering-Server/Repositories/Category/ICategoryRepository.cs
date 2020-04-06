@@ -13,5 +13,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task DeleteCategory(Category category);
         Task<Category> GetCategoryById(int id);
         Task<List<Category>> GetAllCategories();
+        Task<bool> IsCategoryNameUnique(string name);
     }
 }

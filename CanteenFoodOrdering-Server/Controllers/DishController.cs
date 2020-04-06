@@ -94,7 +94,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAllDishes()
         {
             List<DishInfoViewModel> dishes = new List<DishInfoViewModel>();

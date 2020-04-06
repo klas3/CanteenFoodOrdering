@@ -194,14 +194,14 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        public bool CheckIfUserAlreadyAuthorized()
+        public IActionResult CheckIfUserAlreadyAuthorized()
         {
             if (User.Identity.IsAuthenticated)
             {
-                return true;
+                return Json(true);
             }
 
-            return false;
+            return Json(false);
         }
     }
 }

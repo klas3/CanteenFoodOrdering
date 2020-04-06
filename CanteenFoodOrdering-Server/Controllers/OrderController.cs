@@ -34,7 +34,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)
@@ -108,7 +107,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
             List<Order> orders;
 
-            if (User.IsInRole("Cashier"))
+            if (!User.IsInRole("Customer"))
             {
                 orders = await _orderRepository.GetOrders();
             }
@@ -118,7 +117,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 if (orders == null)
                 {
-                    return NotFound();
+                    return Json(orders);
                 }
             }
 
@@ -173,6 +172,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     IsPaid = order.IsPaid
                 };
 
+                await _orderRepository.DeleteOrder(order);
                 await _orderRepository.CreateOrderHistory(orderHistory);
 
                 foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
@@ -230,26 +230,17 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-
-                if (User.IsInRole("Cashier"))
+                if(!User.IsInRole("Cashier"))
                 {
-                    await _orderRepository.DeleteOrder(order);
-
-                    return Ok();
-                }
-                else
-                {
-                    var user = await _userManager.GetUserAsync(User);
-
-                    if (order.UserId == user.Id)
+                    if (order.UserId == (await _userManager.GetUserAsync(User))?.Id)
                     {
-                        await _orderRepository.DeleteOrder(order);
-
-                        return Ok();
+                        return NotFound();
                     }
-
-                    return NotFound();
                 }
+
+                await _orderRepository.DeleteOrder(order);
+
+                return Ok();
             }
 
             return NotFound();

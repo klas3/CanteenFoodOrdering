@@ -44,5 +44,11 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.Categories.ToListAsync();
         }
+
+        public async Task<bool> IsCategoryNameUnique(string name)
+        {
+            var c = await _context.Categories.Where(c => c.Name == name).SingleOrDefaultAsync();
+            return c == null;
+        }
     }
 }

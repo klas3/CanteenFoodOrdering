@@ -24,12 +24,19 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (category.Name != null && category.Name != "")
             {
-                await _categoryRepository.CreateCategory(new Category
+                if(await _categoryRepository.IsCategoryNameUnique(category.Name))
                 {
-                    Name = category.Name
-                });
+                    await _categoryRepository.CreateCategory(new Category
+                    {
+                        Name = category.Name
+                    });
 
-                return Ok();
+                    return Ok();
+                }
+                else
+                {
+                    return Problem("Категорія з даним ім'ям вже існує.");
+                }
             }
 
             return Problem();
@@ -46,23 +53,30 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             if (category.Name != null && category.Name != "")
             {
-                Category categoryModel = await _categoryRepository.GetCategoryById(category.CategoryId);
-
-                if (categoryModel == null)
+                if (await _categoryRepository.IsCategoryNameUnique(category.Name))
                 {
-                    return NotFound();
-                }
+                    Category categoryModel = await _categoryRepository.GetCategoryById(category.CategoryId);
 
-                if (category.Name == categoryModel.Name)
+                    if (categoryModel == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (category.Name == categoryModel.Name)
+                    {
+                        return Problem($"Категорія з назвою {category.Name} вже існує");
+                    }
+
+                    categoryModel.Name = category.Name;
+
+                    await _categoryRepository.UpdateCategory(categoryModel);
+
+                    return Ok();
+                }
+                else
                 {
-                    return Problem($"Категорія з назвою {category.Name} вже існує");
+                    return Problem("Категорія з даним ім'ям вже існує.");
                 }
-
-                categoryModel.Name = category.Name;
-
-                await _categoryRepository.UpdateCategory(categoryModel);
-
-                return Ok();
             }
 
             return Problem();
