@@ -82,11 +82,11 @@ namespace CanteenFoodOrdering_Server.Controllers
                             {
                                 await _roleManager.CreateAsync(new IdentityRole("Administrator"));
                                 await _roleManager.CreateAsync(new IdentityRole("Cook"));
-                                await _roleManager.CreateAsync(new IdentityRole("Сashier"));
                                 await _roleManager.CreateAsync(new IdentityRole("Customer"));
+                                await _roleManager.CreateAsync(new IdentityRole("Cash"));
                             }
-
-                            if(viewModel.Role == "Administrator")
+                            
+                            if (viewModel.Role == "Administrator")
                             {
                                 await _userManager.AddToRoleAsync(user, "Administrator");
                             }
@@ -94,9 +94,9 @@ namespace CanteenFoodOrdering_Server.Controllers
                             {
                                 await _userManager.AddToRoleAsync(user, "Cook");
                             }
-                            else if (viewModel.Role == "Cashier" && User.IsInRole("Administrator"))
+                            else if (viewModel.Role == "Cash" && User.IsInRole("Administrator"))
                             {
-                                await _userManager.AddToRoleAsync(user, "Cashier");
+                                await _userManager.AddToRoleAsync(user, "Cash");
                             }
                             else
                             {
@@ -108,9 +108,16 @@ namespace CanteenFoodOrdering_Server.Controllers
                                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
                             }
 
-                            var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, true, false);
+                            if(!User.IsInRole("Administrator"))
+                            {
+                                var signInUserResult = await _signInManager.PasswordSignInAsync(viewModel.Login, viewModel.Password, true, false);
 
-                            if (signInUserResult.Succeeded)
+                                if (signInUserResult.Succeeded)
+                                {
+                                    return Ok();
+                                }
+                            }
+                            else
                             {
                                 return Ok();
                             }
