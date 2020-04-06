@@ -15,6 +15,7 @@ namespace CanteenFoodOrdering_Server.Controllers
     public class DishController : Controller
     {
         private IDishRepository _dishRepository;
+        private const int maxPhotoFileSize = 400 * 1024;
 
         public DishController(IDishRepository dishRepository)
         {
@@ -29,7 +30,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 if (dish.Photo != null && dish.Photo != "")
                 {
-                    if (!VerifyDishPhotoSize(dish.Photo, 400))
+                    if (!VerifyDishPhotoSize(dish.Photo, maxPhotoFileSize))
                     {
                         return Problem($"Розмір картинки завелекий. Максимально допустимий розмір: 400 КБ");
                     }
@@ -51,7 +52,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 if (model.Photo != null && model.Photo != "")
                 {
-                    if (!VerifyDishPhotoSize(model.Photo, 400))
+                    if (!VerifyDishPhotoSize(model.Photo, maxPhotoFileSize))
                     {
                         return Problem($"Розмір картинки завелекий. Максимально допустимий розмір: 400 КБ");
                     }
