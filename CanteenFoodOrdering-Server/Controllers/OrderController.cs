@@ -44,6 +44,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     CreationDate = DateTime.Now,
                     DesiredDate = DateTime.Parse(model.DesiredDate),
                     Wishes = model.Wishes,
+                    TotalSum = 0,
                     IsPaid = false,
                     IsReady = false,
                     UserId = (await _userManager.GetUserAsync(User)).Id
@@ -57,6 +58,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     {
                         return Problem($"Недостатня кількість страви: {dish.Name}. Вибрано: {dishToOrder.Count}. В наявності: {dish.Count}");
                     }
+
+                    order.TotalSum += dish.Cost;
                 }
 
                 await _orderRepository.CreateOrder(order);
@@ -72,7 +75,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishCount = dishToOrder.Count
                     });
 
-                    order.TotalSum += dish.Cost;
                     dish.Count -= dishToOrder.Count;
 
                     await _dishRepository.UpdateDish(dish);
