@@ -43,7 +43,9 @@ namespace CanteenFoodOrdering_Server.Controllers
                     CreationDate = DateTime.Now,
                     DesiredDate = DateTime.Parse(model.DesiredDate),
                     Wishes = model.Wishes,
+                    TotalSum = 0,
                     IsPaid = false,
+                    IsReady = false,
                     UserId = (await _userManager.GetUserAsync(User)).Id
                 };
 
@@ -55,6 +57,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     {
                         return Problem($"Недостатня кількість страви: {dish.Name}. Вибрано: {dishToOrder.Count}. В наявності: {dish.Count}");
                     }
+
+                    order.TotalSum += dish.Cost;
                 }
 
                 await _orderRepository.CreateOrder(order);
@@ -140,13 +144,31 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cashier")]
-        public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
+        public async Task<IActionResult> SetToTrueOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
             
             if (order != null)
             {
-                order.IsPaid = !order.IsPaid;
+                order.IsPaid = true;
+
+                await _orderRepository.UpdateOrder(order);
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> SetToTrueOrderReadyStatudById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                order.IsReady = true;
 
                 await _orderRepository.UpdateOrder(order);
 
