@@ -145,13 +145,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cashier")]
-        public async Task<IActionResult> UpdateOrderPaymentStatusById(int id)
+        public async Task<IActionResult> SetToTrueOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
             
             if (order != null)
             {
-                order.IsPaid = !order.IsPaid;
+                order.IsPaid = true;
 
                 await _orderRepository.UpdateOrder(order);
 
@@ -163,13 +163,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cook")]
-        public async Task<IActionResult> UpdateOrderReadyStatudById(int id)
+        public async Task<IActionResult> SetToTrueOrderReadyStatudById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
 
             if (order != null)
             {
-                order.IsReady = !order.IsReady;
+                order.IsReady = true;
 
                 await _orderRepository.UpdateOrder(order);
 
