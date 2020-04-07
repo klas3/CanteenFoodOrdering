@@ -16,7 +16,9 @@ namespace CanteenFoodOrdering_Server.ViewModels
         [Required]
         public DateTime DesiredDate { get; set; }
         public string Wishes { get; set; }
+        public float TotalSum { get; set; }
         public bool IsPaid { get; set; }
+        public bool IsReady { get; set; }
         [Required]
         public List<DishInfoViewModel> Dishes { get; set; }
     }

@@ -191,6 +191,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     CreationDate = order.CreationDate,
                     DesiredDate = order.DesiredDate,
                     Wishes = order.Wishes,
+                    TotalSum = order.TotalSum,
                     IsPaid = order.IsPaid
                 };
 
@@ -221,7 +222,9 @@ namespace CanteenFoodOrdering_Server.Controllers
                 CreationDate = order.CreationDate,
                 DesiredDate = order.DesiredDate,
                 Wishes = order.Wishes,
+                TotalSum = order.TotalSum,
                 IsPaid = order.IsPaid,
+                IsReady = order.IsReady,
                 Dishes = new List<DishInfoViewModel>()
             };
 
