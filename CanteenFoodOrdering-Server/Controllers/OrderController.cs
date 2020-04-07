@@ -86,7 +86,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer, Cashier, Cook")]
+        [Authorize(Roles = "Customer, Cash, Cook")]
         public async Task<IActionResult> GetCustomerFullOrderInfoById(int id)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -143,7 +143,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Cashier")]
+        [Authorize(Roles = "Cash")]
         public async Task<IActionResult> SetToTrueOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -253,7 +253,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                if(!User.IsInRole("Cashier"))
+                if(!User.IsInRole("Cash"))
                 {
                     if (order.UserId == (await _userManager.GetUserAsync(User))?.Id)
                     {
