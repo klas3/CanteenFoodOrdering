@@ -45,6 +45,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     DesiredDate = DateTime.Parse(model.DesiredDate),
                     Wishes = model.Wishes,
                     IsPaid = false,
+                    IsReady = false,
                     UserId = (await _userManager.GetUserAsync(User)).Id
                 };
 
@@ -71,6 +72,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishCount = dishToOrder.Count
                     });
 
+                    order.TotalSum += dish.Cost;
                     dish.Count -= dishToOrder.Count;
 
                     await _dishRepository.UpdateDish(dish);
@@ -141,13 +143,31 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Cashier")]
-        public async Task<IActionResult> UpdateOrderPaymentStatus(int id)
+        public async Task<IActionResult> UpdateOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
             
             if (order != null)
             {
                 order.IsPaid = !order.IsPaid;
+
+                await _orderRepository.UpdateOrder(order);
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cook")]
+        public async Task<IActionResult> UpdateOrderReadyStatudById(int id)
+        {
+            Order order = await _orderRepository.GetOrderById(id);
+
+            if (order != null)
+            {
+                order.IsReady = !order.IsReady;
 
                 await _orderRepository.UpdateOrder(order);
 

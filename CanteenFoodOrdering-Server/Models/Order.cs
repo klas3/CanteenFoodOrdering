@@ -13,7 +13,9 @@ namespace CanteenFoodOrdering_Server.Models
         public DateTime CreationDate { get; set; }
         public DateTime DesiredDate { get; set; }
         public string Wishes { get; set; }
+        public float TotalSum { get; set; }
         public bool IsPaid { get; set; }
+        public bool IsReady { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<OrderedDish> OrderedDish { get; set; }
