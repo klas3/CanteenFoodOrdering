@@ -194,6 +194,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             FullOrderViewModel fullOrder = new FullOrderViewModel
             {
+                OrderId = order.OrderId,
                 UserId = order.UserId,
                 CreationDate = order.CreationDate,
                 DesiredDate = order.DesiredDate,
