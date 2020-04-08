@@ -217,10 +217,12 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SetPushTokenToUser(string pushToken)
         {
             User user = await _userManager.GetUserAsync(User);
-            user.PushToken = pushToken;
+
+            await _userRepository.SetPushTokenToUser(user, pushToken);
 
             return Ok();
         }
