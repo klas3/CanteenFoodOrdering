@@ -53,7 +53,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
 
-                    order.TotalSum += dish.Cost;
+                    order.TotalSum += dish.Cost * dishToOrder.Count;
                 }
 
                 await _orderRepository.CreateOrder(order);
