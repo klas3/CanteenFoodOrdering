@@ -56,5 +56,10 @@ namespace CanteenFoodOrdering_Server.Repositories
 
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+        public async Task<User> GetUserById(string id)
+        {
+            return await _context.DBUsers.SingleOrDefaultAsync(u => u.Id == id);
+        }
     }
 }

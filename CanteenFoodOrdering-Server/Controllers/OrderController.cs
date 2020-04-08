@@ -9,6 +9,7 @@ using CanteenFoodOrdering_Server.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Http;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -19,18 +20,21 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderRepository _orderRepository;
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
+        private IUserRepository _userRepository;
 
         public OrderController
         (   UserManager<User> userManager,
             IOrderRepository orderRepository,
             IOrderedDishRepository orderedDishRepository,
-            IDishRepository dishRepository
+            IDishRepository dishRepository,
+            IUserRepository userRepository
         )
         {
             _userManager = userManager;
             _orderRepository = orderRepository;
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
+            _userRepository = userRepository;
         }
 
         [HttpPost]
@@ -171,6 +175,8 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                     await _orderRepository.UpdateOrder(order);
 
+                    await SendPushNotification(order.UserId, order.OrderId);
+
                     return Ok();
                 }
 
@@ -277,6 +283,14 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return NotFound();
+        }
+
+        private async Task SendPushNotification(string userId, int orderId)
+        {
+            await (new HttpClient()).PostAsync(
+                "https://exp.host/--/api/v2/push/send", 
+                new StringContent($"{{ \"to\": \"{(await _userRepository.GetUserById(userId))?.PushToken}\", \"title\": \"Замовлення\", \"body\": \"Ваше замовлення №{orderId} чекає на вас.\", \"sound\": \"default\" }}", Encoding.UTF8, "application/json")
+            );
         }
     }
 }
