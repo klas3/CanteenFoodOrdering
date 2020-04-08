@@ -218,6 +218,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("{controller}/{action}/{pushToken}")]
         public async Task<IActionResult> SetPushTokenToUser(string pushToken)
         {
             if (pushToken != null && pushToken != "")
