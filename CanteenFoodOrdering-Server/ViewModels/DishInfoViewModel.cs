@@ -19,7 +19,6 @@ namespace CanteenFoodOrdering_Server.ViewModels
         public string Description { get; set; }
         public string Photo { get; set; }
         public string ImageMimeType { get; set; }
-        [Required]
         public int Count { get; set; }
     }
 }

@@ -13,6 +13,8 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task<List<Order>> GetCustomerOders(User customer);
         Task<Order> GetOrderById(int id);
         Task<List<Order>> GetOrders();
+        Task<List<Order>> GetPaidOrders();
+        Task<List<Order>> GetUnpaidOrders();
         Task UpdateOrder(Order order);
         Task DeleteOrder(Order order);
     }

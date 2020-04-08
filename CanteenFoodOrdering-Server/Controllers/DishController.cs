@@ -66,25 +66,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                 dish.Description = model.Description;
                 dish.Photo = model.Photo;
                 dish.ImageMimeType = model.ImageMimeType;
-                dish.Count = model.Count;
-
-                await _dishRepository.UpdateDish(dish);
-
-                return Ok();
-            }
-
-            return Problem();
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Cook")]
-        public async Task<IActionResult> UpdateDishCount([FromBody] DishCountViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                Dish dish = await _dishRepository.GetDishById(model.DishId);
-
-                dish.Count += model.Count;
 
                 await _dishRepository.UpdateDish(dish);
 
@@ -126,8 +107,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     Cost = dish.Cost,
                     Description = dish.Description,
                     Photo = dish.Photo,
-                    ImageMimeType = dish.ImageMimeType,
-                    Count = dish.Count
+                    ImageMimeType = dish.ImageMimeType
                 });
             });
 

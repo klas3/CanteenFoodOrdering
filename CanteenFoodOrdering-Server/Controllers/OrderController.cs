@@ -53,11 +53,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
 
-                    if (dishToOrder.Count > dish.Count)
-                    {
-                        return Problem($"Недостатня кількість страви: {dish.Name}. Вибрано: {dishToOrder.Count}. В наявності: {dish.Count}");
-                    }
-
                     order.TotalSum += dish.Cost;
                 }
 
@@ -73,8 +68,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishId = dishToOrder.DishId,
                         DishCount = dishToOrder.Count
                     });
-
-                    dish.Count -= dishToOrder.Count;
 
                     await _dishRepository.UpdateDish(dish);
                 }
@@ -111,9 +104,13 @@ namespace CanteenFoodOrdering_Server.Controllers
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
             List<Order> orders;
 
-            if (!User.IsInRole("Customer"))
+            if (User.IsInRole("Cash"))
             {
-                orders = await _orderRepository.GetOrders();
+                orders = await _orderRepository.GetUnpaidOrders();
+            }
+            else if (User.IsInRole("Cook"))
+            {
+                orders = await _orderRepository.GetPaidOrders();
             }
             else
             {
@@ -168,11 +165,16 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                order.IsReady = true;
+                if (order.IsPaid)
+                {
+                    order.IsReady = true;
 
-                await _orderRepository.UpdateOrder(order);
+                    await _orderRepository.UpdateOrder(order);
 
-                return Ok();
+                    return Ok();
+                }
+
+                return Problem("Замовлення ще не оплачене");
             }
 
             return NotFound();
@@ -242,7 +244,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     Description = dish.Description,
                     Photo = dish.Photo,
                     ImageMimeType = dish.ImageMimeType,
-                    Count = dish.Count
+                    Count = orderedDish.DishCount
                 });
             }
 

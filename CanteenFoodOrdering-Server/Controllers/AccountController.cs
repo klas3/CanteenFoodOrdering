@@ -165,13 +165,18 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                string newPassword = _userRepository.GenerateRandomKey();
-                string newPasswordHash = _userManager.PasswordHasher.HashPassword(user, newPassword);
+                if (user != null)
+                {
+                    string newPassword = _userRepository.GenerateRandomKey();
+                    string newPasswordHash = _userManager.PasswordHasher.HashPassword(user, newPassword);
 
-                await _userRepository.ChangePasswordHash(user, newPasswordHash);
-                await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Використайте для логіна наступний тимчасной пароль {newPassword}");
+                    await _userRepository.ChangePasswordHash(user, newPasswordHash);
+                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Використайте для логіна наступний тимчасной пароль {newPassword}");
 
-                return Ok();
+                    return Ok();
+                }
+
+                return NotFound();
             }
 
             return Problem();
@@ -209,6 +214,22 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Json(false);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SetPushTokenToUser(string pushToken)
+        {
+            if (pushToken != null && pushToken != "")
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                await _userRepository.SetPushTokenToUser(user, pushToken);
+
+                return Ok();
+            }
+
+            return Problem();
         }
     }
 }

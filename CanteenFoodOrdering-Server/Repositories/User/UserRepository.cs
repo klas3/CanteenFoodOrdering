@@ -41,6 +41,12 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task SetPushTokenToUser(User user, string pushToken)
+        {
+            user.PushToken = pushToken;
+            await _context.SaveChangesAsync();
+        }
+
         public string GenerateRandomKey()
         {
             Random random = new Random();

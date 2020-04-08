@@ -13,6 +13,7 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task<bool> IsEmailUnique(string email);
         Task<string> GetUserEmailById(string id);
         Task ChangePasswordHash(User user, string newPasswordHash);
+        Task SetPushTokenToUser(User user, string pushToken);
         string GenerateRandomKey();
     }
 }

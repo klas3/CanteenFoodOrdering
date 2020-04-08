@@ -8,6 +8,8 @@ namespace CanteenFoodOrdering_Server.Models
 {
     public class User : IdentityUser
     {
+        public string PushToken { get; set; }
+
         public virtual ICollection<Order> Order { get; set; }
     }
 }
