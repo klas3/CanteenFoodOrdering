@@ -210,5 +210,14 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Json(false);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SetPushTokenToUser(string pushToken)
+        {
+            User user = await _userManager.GetUserAsync(User);
+            user.PushToken = pushToken;
+
+            return Ok();
+        }
     }
 }
