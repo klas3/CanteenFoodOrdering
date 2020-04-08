@@ -53,11 +53,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
 
-                    if (dishToOrder.Count > dish.Count)
-                    {
-                        return Problem($"Недостатня кількість страви: {dish.Name}. Вибрано: {dishToOrder.Count}. В наявності: {dish.Count}");
-                    }
-
                     order.TotalSum += dish.Cost;
                 }
 
@@ -73,8 +68,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishId = dishToOrder.DishId,
                         DishCount = dishToOrder.Count
                     });
-
-                    dish.Count -= dishToOrder.Count;
 
                     await _dishRepository.UpdateDish(dish);
                 }
@@ -242,7 +235,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     Description = dish.Description,
                     Photo = dish.Photo,
                     ImageMimeType = dish.ImageMimeType,
-                    Count = dish.Count
+                    Count = orderedDish.DishCount
                 });
             }
 
