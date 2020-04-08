@@ -220,11 +220,16 @@ namespace CanteenFoodOrdering_Server.Controllers
         [Authorize]
         public async Task<IActionResult> SetPushTokenToUser(string pushToken)
         {
-            User user = await _userManager.GetUserAsync(User);
+            if (pushToken != null && pushToken != "")
+            {
+                var user = await _userManager.GetUserAsync(User);
 
-            await _userRepository.SetPushTokenToUser(user, pushToken);
+                await _userRepository.SetPushTokenToUser(user, pushToken);
 
-            return Ok();
+                return Ok();
+            }
+
+            return Problem();
         }
     }
 }
