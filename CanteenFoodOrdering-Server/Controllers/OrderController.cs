@@ -258,11 +258,16 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                if(!User.IsInRole("Cash"))
+                if(!User.IsInRole("Cash") && !User.IsInRole("Cook"))
                 {
-                    if (order.UserId == (await _userManager.GetUserAsync(User))?.Id)
+                    if (order.UserId != (await _userManager.GetUserAsync(User))?.Id)
                     {
-                        return NotFound();
+                        return Problem();
+                    }
+
+                    if(order.IsPaid)
+                    {
+                        return Problem();
                     }
                 }
 
