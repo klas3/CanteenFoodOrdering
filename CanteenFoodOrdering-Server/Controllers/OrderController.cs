@@ -165,11 +165,16 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                order.IsReady = true;
+                if (order.IsPaid)
+                {
+                    order.IsReady = true;
 
-                await _orderRepository.UpdateOrder(order);
+                    await _orderRepository.UpdateOrder(order);
 
-                return Ok();
+                    return Ok();
+                }
+
+                return Problem("Замовлення ще не оплачене");
             }
 
             return NotFound();
