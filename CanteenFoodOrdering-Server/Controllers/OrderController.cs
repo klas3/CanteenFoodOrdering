@@ -104,9 +104,13 @@ namespace CanteenFoodOrdering_Server.Controllers
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
             List<Order> orders;
 
-            if (!User.IsInRole("Customer"))
+            if (User.IsInRole("Cash"))
             {
-                orders = await _orderRepository.GetOrders();
+                orders = await _orderRepository.GetUnpaidOrders();
+            }
+            else if (User.IsInRole("Cook"))
+            {
+                orders = await _orderRepository.GetPaidOrders();
             }
             else
             {
