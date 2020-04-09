@@ -8,7 +8,7 @@ namespace CanteenFoodOrdering_Server.Chats
 {
     public class OrdersHub : Hub
     {
-        public async Task SendToCashier(object order)
+        public async Task SendToCashier(string order)
         {
             await this.Clients.All.SendAsync("SendToCashier", order);
         }
