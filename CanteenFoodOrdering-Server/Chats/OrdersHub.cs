@@ -19,7 +19,7 @@ namespace CanteenFoodOrdering_Server.Chats
         [Authorize(Roles = "Cash")]
         public async Task SendToCook(object order)
         {
-            await Clients.User().SendAsync("SendToCook", order);
+            await Clients.All.SendAsync("SendToCook", order);
         }
     }
 }
