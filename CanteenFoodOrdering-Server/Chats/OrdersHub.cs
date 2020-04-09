@@ -10,16 +10,23 @@ namespace CanteenFoodOrdering_Server.Chats
     [Authorize]
     public class OrdersHub : Hub
     {
+        private IHubContext<OrdersHub> _context;
+
+        public OrdersHub(IHubContext<OrdersHub> context)
+        {
+            _context = context;
+        }
+
         [Authorize(Roles="Customer")]
         public async Task SendToCashier(object order)
         {
-            await Clients.All.SendAsync("SendToCashier", order);
+            await _context.Clients.All.SendAsync("SendToCashier", order);
         }
 
         [Authorize(Roles = "Cash")]
         public async Task SendToCook(object order)
         {
-            await Clients.All.SendAsync("SendToCook", order);
+            await _context.Clients.All.SendAsync("SendToCook", order);
         }
     }
 }

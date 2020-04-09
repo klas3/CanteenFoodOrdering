@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using System.Net.Http;
 using CanteenFoodOrdering_Server.Chats;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -29,7 +30,8 @@ namespace CanteenFoodOrdering_Server.Controllers
             IOrderRepository orderRepository,
             IOrderedDishRepository orderedDishRepository,
             IDishRepository dishRepository,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IHubContext<OrdersHub> hubContext
         )
         {
             _userManager = userManager;
@@ -37,7 +39,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
             _userRepository = userRepository;
-            _ordersHub = new OrdersHub();
+            _ordersHub = new OrdersHub(hubContext);
         }
 
         [HttpPost]
@@ -67,19 +69,15 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 foreach (DishCountViewModel dishToOrder in model.Dishes)
                 {
-                    Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
-
                     await _orderedDishRepository.CreateOrderedDish(new OrderedDish
                     {
                         OrderId = order.OrderId,
                         DishId = dishToOrder.DishId,
                         DishCount = dishToOrder.Count
                     });
-
-                    await _dishRepository.UpdateDish(dish);
                 }
 
-                await _ordersHub.SendToCashier(GetAllFullOrderInfoByOrder(order));
+                await _ordersHub.SendToCashier(await GetAllFullOrderInfoByOrder(await _orderRepository.GetOrderById(order.OrderId)));
 
                 return Ok();
             }
@@ -160,7 +158,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.UpdateOrder(order);
 
-                await _ordersHub.SendToCook(GetAllFullOrderInfoByOrder(order));
+                await _ordersHub.SendToCook(await GetAllFullOrderInfoByOrder(order));
 
                 return Ok();
             }
