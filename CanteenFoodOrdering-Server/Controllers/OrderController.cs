@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using System.Net.Http;
+using CanteenFoodOrdering_Server.Chats;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -21,6 +22,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
         private IUserRepository _userRepository;
+        private OrdersHub _ordersHub; 
 
         public OrderController
         (   UserManager<User> userManager,
@@ -35,6 +37,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
             _userRepository = userRepository;
+            _ordersHub = new OrdersHub();
         }
 
         [HttpPost]
@@ -75,6 +78,8 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                     await _dishRepository.UpdateDish(dish);
                 }
+
+                await _ordersHub.SendToCashier(GetAllFullOrderInfoByOrder(order));
 
                 return Ok();
             }
@@ -154,6 +159,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                 order.IsPaid = true;
 
                 await _orderRepository.UpdateOrder(order);
+
+                await _ordersHub.SendToCook(GetAllFullOrderInfoByOrder(order));
 
                 return Ok();
             }
