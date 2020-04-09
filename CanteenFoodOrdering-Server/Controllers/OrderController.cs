@@ -158,6 +158,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.UpdateOrder(order);
 
+                await _ordersHub.RemoveOnCashier(id);
                 await _ordersHub.SendToCook(await GetAllFullOrderInfoByOrder(order));
 
                 return Ok();
@@ -219,6 +220,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId
                     });
                 }
+
+                await _ordersHub.RemoveOnCook(id);
 
                 return Ok();
             }

@@ -28,5 +28,17 @@ namespace CanteenFoodOrdering_Server.Chats
         {
             await _context.Clients.All.SendAsync("SendToCook", order);
         }
+
+        [Authorize(Roles = "Cash")]
+        public async Task RemoveOnCashier(object id)
+        {
+            await _context.Clients.All.SendAsync("RemoveOnCashier", id);
+        }
+
+        [Authorize(Roles = "Cook")]
+        public async Task RemoveOnCook(object id)
+        {
+            await _context.Clients.All.SendAsync("RemoveOnCook", id);
+        }
     }
 }
