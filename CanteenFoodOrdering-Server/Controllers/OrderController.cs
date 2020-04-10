@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using System.Net.Http;
+using CanteenFoodOrdering_Server.Chats;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -21,13 +23,15 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
         private IUserRepository _userRepository;
+        private OrdersHub _ordersHub; 
 
         public OrderController
         (   UserManager<User> userManager,
             IOrderRepository orderRepository,
             IOrderedDishRepository orderedDishRepository,
             IDishRepository dishRepository,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IHubContext<OrdersHub> hubContext
         )
         {
             _userManager = userManager;
@@ -35,6 +39,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             _orderedDishRepository = orderedDishRepository;
             _dishRepository = dishRepository;
             _userRepository = userRepository;
+            _ordersHub = new OrdersHub(hubContext);
         }
 
         [HttpPost]
@@ -64,17 +69,15 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 foreach (DishCountViewModel dishToOrder in model.Dishes)
                 {
-                    Dish dish = await _dishRepository.GetDishById(dishToOrder.DishId);
-
                     await _orderedDishRepository.CreateOrderedDish(new OrderedDish
                     {
                         OrderId = order.OrderId,
                         DishId = dishToOrder.DishId,
                         DishCount = dishToOrder.Count
                     });
-
-                    await _dishRepository.UpdateDish(dish);
                 }
+
+                await _ordersHub.SendToCashier(await GetAllFullOrderInfoByOrder(await _orderRepository.GetOrderById(order.OrderId)));
 
                 return Ok();
             }
@@ -155,6 +158,9 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.UpdateOrder(order);
 
+                await _ordersHub.RemoveOnCashier(id);
+                await _ordersHub.SendToCook(await GetAllFullOrderInfoByOrder(order));
+
                 return Ok();
             }
 
@@ -214,6 +220,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                         DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId
                     });
                 }
+
+                await _ordersHub.RemoveOnCook(id);
 
                 return Ok();
             }
@@ -278,6 +286,15 @@ namespace CanteenFoodOrdering_Server.Controllers
                 }
 
                 await _orderRepository.DeleteOrder(order);
+
+                if (User.IsInRole("Cash") || User.IsInRole("Customer"))
+                {
+                    await _ordersHub.RemoveOnCashier(id);
+                }
+                else if(User.IsInRole("Cook"))
+                {
+                    await _ordersHub.RemoveOnCook(id);
+                }
 
                 return Ok();
             }
