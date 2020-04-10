@@ -287,6 +287,8 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.DeleteOrder(order);
 
+                await _ordersHub.RemoveOnCook(id);
+
                 return Ok();
             }
 
