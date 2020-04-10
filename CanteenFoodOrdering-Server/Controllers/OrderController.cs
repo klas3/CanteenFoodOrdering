@@ -287,7 +287,14 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.DeleteOrder(order);
 
-                await _ordersHub.RemoveOnCook(id);
+                if (User.IsInRole("Cash") || User.IsInRole("Customer"))
+                {
+                    await _ordersHub.RemoveOnCashier(id);
+                }
+                else if(User.IsInRole("Cook"))
+                {
+                    await _ordersHub.RemoveOnCook(id);
+                }
 
                 return Ok();
             }
