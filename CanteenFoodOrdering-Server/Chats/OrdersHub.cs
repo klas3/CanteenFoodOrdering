@@ -17,7 +17,7 @@ namespace CanteenFoodOrdering_Server.Chats
             _context = context;
         }
 
-        [Authorize(Roles="Customer")]
+        [Authorize(Roles = "Customer")]
         public async Task SendToCashier(object order)
         {
             await _context.Clients.All.SendAsync("SendToCashier", order);
