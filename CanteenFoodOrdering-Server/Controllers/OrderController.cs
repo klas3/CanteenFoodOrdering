@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity;
 using System.Net.Http;
 using CanteenFoodOrdering_Server.Chats;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Security.Cryptography;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -23,7 +26,8 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
         private IUserRepository _userRepository;
-        private OrdersHub _ordersHub; 
+        private OrdersHub _ordersHub;
+        private IConfiguration _configuration;
 
         public OrderController
         (   UserManager<User> userManager,
@@ -31,7 +35,8 @@ namespace CanteenFoodOrdering_Server.Controllers
             IOrderedDishRepository orderedDishRepository,
             IDishRepository dishRepository,
             IUserRepository userRepository,
-            IHubContext<OrdersHub> hubContext
+            IHubContext<OrdersHub> hubContext,
+            IConfiguration configuration
         )
         {
             _userManager = userManager;
@@ -40,6 +45,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             _dishRepository = dishRepository;
             _userRepository = userRepository;
             _ordersHub = new OrdersHub(hubContext);
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -300,6 +306,44 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPaymentData(int orderId)
+        {
+            Order order = await _orderRepository.GetOrderById(orderId);
+
+            if((await _userManager.GetUserAsync(User)).Id == order.UserId)
+            {
+                string privateKey = "WwnkpnDCwSNHncFvNCbT3oBmoTVyGY7z4NJ5dVzT";
+
+                string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
+                {
+                    Action = "pay",
+                    Amount = order.TotalSum.ToString(),
+                    Description = $"Оплата замовлення №{orderId}",
+                    Version = "3",
+                    Order_Id = orderId.ToString(),
+                    Currency = "UAH",
+                    Public_Key = "i77133712504"
+                })));
+
+                string hash = string.Empty;
+
+                foreach (var b in new SHA1Managed().ComputeHash(Encoding.ASCII.GetBytes($"{privateKey}{data}{privateKey}")))
+                {
+                    hash += b.ToString("X2");
+                }
+
+                return Json(new PaymentData
+                {
+                    Data = data,
+                    Signature = Convert.ToBase64String(Encoding.UTF8.GetBytes(hash))
+                });
+            }
+
+            return Problem();
         }
 
         private async Task SendPushNotification(string userId, int orderId)
