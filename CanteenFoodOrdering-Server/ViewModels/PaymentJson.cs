@@ -7,12 +7,12 @@ namespace CanteenFoodOrdering_Server.ViewModels
 {
     public class PaymentJson
     {
-        public string Public_Key { get; set; }
-        public string Version { get; set; }
-        public string Action { get; set; }
-        public string Amount { get; set; }
-        public string Currency { get; set; }
-        public string Description { get; set; }
-        public string Order_Id { get; set; }
+        public string public_key { get; set; }
+        public string version { get; set; }
+        public string action { get; set; }
+        public string amount { get; set; }
+        public string currency { get; set; }
+        public string description { get; set; }
+        public string order_Id { get; set; }
     }
 }

@@ -320,13 +320,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
                 {
-                    Action = "pay",
-                    Amount = order.TotalSum.ToString(),
-                    Description = $"Оплата замовлення №{orderId}",
-                    Version = "3",
-                    Order_Id = orderId.ToString(),
-                    Currency = "UAH",
-                    Public_Key = "i77133712504"
+                    action = "pay",
+                    amount = order.TotalSum.ToString(),
+                    description = $"Оплата замовлення №{orderId}",
+                    version = "3",
+                    order_Id = orderId.ToString(),
+                    currency = "UAH",
+                    public_key = "i77133712504"
                 })));
 
                 string hash = string.Empty;
