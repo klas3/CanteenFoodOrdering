@@ -329,17 +329,10 @@ namespace CanteenFoodOrdering_Server.Controllers
                     public_key = "i77133712504"
                 })));
 
-                string hash = string.Empty;
-
-                foreach (var b in SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
-                {
-                    hash += b.ToString("X2");
-                }
-
                 return Json(new PaymentData
                 {
                     Data = data,
-                    Signature = Convert.ToBase64String(Encoding.UTF8.GetBytes(hash))
+                    Signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
                 });
             }
 
