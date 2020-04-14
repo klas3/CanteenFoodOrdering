@@ -304,10 +304,14 @@ namespace CanteenFoodOrdering_Server.Controllers
 
         private async Task SendPushNotification(string userId, int orderId)
         {
-            await (new HttpClient()).PostAsync(
-                "https://exp.host/--/api/v2/push/send", 
-                new StringContent($"{{ \"to\": \"{(await _userRepository.GetUserById(userId))?.PushToken}\", \"title\": \"Замовлення\", \"body\": \"Ваше замовлення №{orderId} чекає на вас.\", \"sound\": \"default\" }}", Encoding.UTF8, "application/json")
-            );
+            try
+            {
+                await (new HttpClient()).PostAsync(
+                    "https://exp.host/--/api/v2/push/send", 
+                    new StringContent($"{{ \"to\": \"{(await _userRepository.GetUserById(userId))?.PushToken}\", \"title\": \"Замовлення\", \"body\": \"Ваше замовлення №{orderId} чекає на вас.\", \"sound\": \"default\" }}", Encoding.UTF8, "application/json")
+                );
+            }
+            catch { }
         }
     }
 }
