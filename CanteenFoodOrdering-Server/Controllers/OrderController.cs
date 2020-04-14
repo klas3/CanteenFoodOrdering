@@ -331,7 +331,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 string hash = string.Empty;
 
-                foreach (var b in new SHA1Managed().ComputeHash(Encoding.ASCII.GetBytes($"{privateKey}{data}{privateKey}")))
+                foreach (var b in SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
                 {
                     hash += b.ToString("X2");
                 }
