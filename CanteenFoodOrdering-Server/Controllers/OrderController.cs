@@ -334,9 +334,9 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 return Json(new PaymentData
                 {
-                    Data = data,
-                    Signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
-            });
+                    data = data,
+                    signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
+                });
             }
 
             return Problem();
@@ -346,7 +346,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.Wishes = $"Data: {paymentData.Data}, Signature: {paymentData.Signature}";
+            order.Wishes = $"Data: {paymentData.data}, Signature: {paymentData.signature}";
             await _orderRepository.UpdateOrder(order);
         }
 
