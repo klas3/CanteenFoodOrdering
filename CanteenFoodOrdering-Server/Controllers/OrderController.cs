@@ -344,10 +344,11 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PayForOrder([FromBody] PaymentData paymentData)
+        public async Task<IActionResult> PayForOrder(string signature, string data)
         {
             Order order = await _orderRepository.GetOrderById(168);
             order.TotalSum = 10;
+            order.Wishes = $"Sig: {signature}, Data: {data}";
             await _orderRepository.UpdateOrder(order);
             return Ok();
         }
