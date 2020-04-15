@@ -18,7 +18,7 @@ using System.Security.Cryptography;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class OrderController : Controller
     {
         private UserManager<User> _userManager;
