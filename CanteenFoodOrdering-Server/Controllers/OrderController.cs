@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private UserManager<User> _userManager;
@@ -308,10 +309,13 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        public async Task GetPaymentData(int orderId)
+        [Authorize]
+        public async Task<IActionResult> GetPaymentData(int orderId)
         {
             Order order = await _orderRepository.GetOrderById(orderId);
 
+            if ((await _userManager.GetUserAsync(User)).Id == order.UserId)
+            {
                 string privateKey = "WwnkpnDCwSNHncFvNCbT3oBmoTVyGY7z4NJ5dVzT";
 
                 string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
@@ -325,10 +329,14 @@ namespace CanteenFoodOrdering_Server.Controllers
                     public_key = "i77133712504"
                 })));
 
-                await (new HttpClient()).PostAsync(
-                    "https://exp.host/--/api/v2/push/send",
-                    new StringContent($"{{ \"data\": \"{data}\", \"signature\": \"{Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))}\" }}", Encoding.UTF8, "application/json")
-                );
+                return Json(new PaymentData
+                {
+                    Data = data,
+                    Signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
+                });
+            }
+
+            return Problem();
         }
 
         public async Task<IActionResult> PayForOrder()
