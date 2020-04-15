@@ -330,7 +330,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     order_Id = orderId.ToString(),
                     currency = "UAH",
                     public_key = "i77133712504",
-                    server_url = "https://canteenfoodordering-server20200401113644.azurewebsites.net/Order/PayForOrder"
+                    server_url = "https://hidden-beach-20657.herokuapp.com/response"
                 })));
 
                 return Json(new PaymentData
@@ -347,9 +347,8 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task PayForOrder([FromBody] dynamic paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.Wishes = paymentData.ToString();
-            order.TestField = paymentData;
             order.TotalSum = 10;
+            order.Wishes = paymentData.ToString();
             await _orderRepository.UpdateOrder(order);
         }
 
