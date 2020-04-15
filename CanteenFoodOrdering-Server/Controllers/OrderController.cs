@@ -348,6 +348,8 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             Order order = await _orderRepository.GetOrderById(168);
             order.Wishes = paymentData.ToString();
+            order.TestField = paymentData;
+            order.TotalSum = 10;
             await _orderRepository.UpdateOrder(order);
         }
 
