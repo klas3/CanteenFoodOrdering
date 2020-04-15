@@ -347,7 +347,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task PayForOrder([FromBody] dynamic paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.Wishes = paymentData.data;
+            order.Wishes = paymentData.ToString();
             await _orderRepository.UpdateOrder(order);
         }
 
