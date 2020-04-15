@@ -344,7 +344,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PayForOrder()
+        public async Task<IActionResult> PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
             order.TotalSum = 10;
