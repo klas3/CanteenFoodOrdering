@@ -335,7 +335,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             Order order = await _orderRepository.GetOrderById(168);
             order.TotalSum = 10;
-            _orderRepository.UpdateOrder(order);
+            await _orderRepository.UpdateOrder(order);
             return Ok();
         }
 
