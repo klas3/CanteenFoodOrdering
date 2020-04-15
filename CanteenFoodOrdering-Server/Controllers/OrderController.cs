@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
+using System.IO;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -346,7 +347,11 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.Wishes = $"Data: {paymentData.data}, Signature: {paymentData.signature}";
+            using (var reader = new StreamReader(Request.Body))
+            {
+                order.Wishes = reader.ReadToEnd();
+            }
+
             await _orderRepository.UpdateOrder(order);
         }
 
