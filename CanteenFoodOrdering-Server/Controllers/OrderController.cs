@@ -326,7 +326,8 @@ namespace CanteenFoodOrdering_Server.Controllers
                     version = "3",
                     order_Id = orderId.ToString(),
                     currency = "UAH",
-                    public_key = "i77133712504"
+                    public_key = "i77133712504",
+                    server_url = "https://canteenfoodordering-server20200401113644.azurewebsites.net/Order/PayForOrder"
                 })));
 
                 return Json(new PaymentData

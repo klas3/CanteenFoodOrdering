@@ -14,5 +14,6 @@ namespace CanteenFoodOrdering_Server.ViewModels
         public string currency { get; set; }
         public string description { get; set; }
         public string order_Id { get; set; }
+        public string server_url { get; set; }
     }
 }
