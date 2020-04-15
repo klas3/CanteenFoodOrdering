@@ -18,7 +18,6 @@ using System.Security.Cryptography;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    // [Authorize]
     public class OrderController : Controller
     {
         private UserManager<User> _userManager;
@@ -49,6 +48,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)
@@ -112,6 +112,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllFullOrdersInfo()
         {
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
@@ -272,6 +273,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> DeleteOrderById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -334,21 +336,21 @@ namespace CanteenFoodOrdering_Server.Controllers
                 {
                     Data = data,
                     Signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
-                });
+            });
             }
 
             return Problem();
         }
 
         [HttpPost]
-        public async Task<IActionResult> PayForOrder()
+        public async Task PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.TotalSum = 10;
+            order.Wishes = $"Data: {paymentData.Data}, Signature: {paymentData.Signature}";
             await _orderRepository.UpdateOrder(order);
-            return Ok();
         }
 
+        [Authorize]
         private async Task SendPushNotification(string userId, int orderId)
         {
             try
