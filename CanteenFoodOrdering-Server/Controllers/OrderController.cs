@@ -344,11 +344,11 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        public async Task PayForOrder([FromBody] dynamic paymentData)
+        public async Task PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
             order.TotalSum += 1;
-            order.Wishes = paymentData.ToString();
+            order.Wishes = paymentData.data;
             await _orderRepository.UpdateOrder(order);
         }
 
