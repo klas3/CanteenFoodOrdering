@@ -347,8 +347,15 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task PayForOrder([FromBody] PaymentData paymentData)
         {
             Order order = await _orderRepository.GetOrderById(168);
-            order.TotalSum += 1;
-            order.Wishes = paymentData.data;
+            if(order.TotalSum == 1)
+            {
+                order.UserId = "smth";
+            }
+            else
+            {
+                order.TotalSum = 1;
+            }
+            
             await _orderRepository.UpdateOrder(order);
         }
 
