@@ -340,6 +340,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             return Problem();
         }
 
+        [HttpPost]
         public async Task<IActionResult> PayForOrder()
         {
             Order order = await _orderRepository.GetOrderById(168);
