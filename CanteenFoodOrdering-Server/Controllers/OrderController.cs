@@ -121,7 +121,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (User.IsInRole("Administrator"))
             {
-                orders = await _orderRepository.GetOrders();
+                orders = await _orderRepository.GetUnpaidOrders();
             }
             else if (User.IsInRole("Cook"))
             {
@@ -281,7 +281,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if (order != null)
             {
-                if(!User.IsInRole("Cash") && !User.IsInRole("Cook"))
+                if(User.IsInRole("Customer"))
                 {
                     if (order.UserId != (await _userManager.GetUserAsync(User))?.Id)
                     {
@@ -296,11 +296,11 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.DeleteOrder(order);
 
-                if (User.IsInRole("Cash") || User.IsInRole("Customer"))
+                if (!order.IsPaid)
                 {
                     await _ordersHub.RemoveOnCashier(id);
                 }
-                else if(User.IsInRole("Cook"))
+                else
                 {
                     await _ordersHub.RemoveOnCook(id);
                 }
