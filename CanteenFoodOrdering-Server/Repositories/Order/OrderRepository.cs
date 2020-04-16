@@ -36,7 +36,7 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Order>> GetCustomerOders(User customer)
+        public async Task<List<Order>> GetOdersByUserId(User customer)
         {
             return await _context.Orders.Where(order => order.UserId == customer.Id).ToListAsync();
         }
@@ -60,11 +60,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         public async Task<List<Order>> GetPaidOrders()
         {
             return await _context.Orders.Where(order => order.IsPaid == true).ToListAsync();
-        }
-
-        public async Task<List<Order>> GetUnpaidOrders()
-        {
-            return await _context.Orders.Where(order => order.IsPaid == false).ToListAsync();
         }
     }
 }

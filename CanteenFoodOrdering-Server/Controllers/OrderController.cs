@@ -119,9 +119,9 @@ namespace CanteenFoodOrdering_Server.Controllers
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
             List<Order> orders;
 
-            if (User.IsInRole("Cash"))
+            if (User.IsInRole("Administrator"))
             {
-                orders = await _orderRepository.GetUnpaidOrders();
+                orders = await _orderRepository.GetOrders();
             }
             else if (User.IsInRole("Cook"))
             {
@@ -129,7 +129,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
             else
             {
-                orders = await _orderRepository.GetCustomerOders(await _userManager.GetUserAsync(User));
+                orders = await _orderRepository.GetOdersByUserId(await _userManager.GetUserAsync(User));
 
                 if (orders == null)
                 {
@@ -155,7 +155,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Cash")]
+        [Authorize(Roles = "Cash, Administrator")]
         public async Task<IActionResult> SetToTrueOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -325,10 +325,10 @@ namespace CanteenFoodOrdering_Server.Controllers
                     amount = order.TotalSum.ToString(),
                     description = $"Оплата замовлення №{orderId}",
                     version = "3",
-                    order_Id = $"order_id_{orderId.ToString()}",
+                    order_Id = orderId.ToString(),
                     currency = "UAH",
                     public_key = "i77133712504",
-                    server_url = "https://canteenfoodordering-server.azurewebsites.net/Order/PayForOrder"
+                    server_url = $"https://canteenfoodordering-server.azurewebsites.net/Order/PayForOrder/{orderId}"
                 })));
 
                 return Json(new PaymentData
@@ -342,15 +342,19 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PayForOrder(string signature, string data)
+        [Route("{controller}/{action}/{orderId}")]
+        public async Task<IActionResult> PayForOrder(int orderId, string signature, string data)
         {
             signature = signature.Replace(' ', '+');
-            Order order = await _orderRepository.GetOrderById(168);
-            order.Wishes = $" sig: {signature}, data: {data}";
-            await _orderRepository.UpdateOrder(order);
+            
             if(GenerateSignature(data) == signature)
             {
-                object convertedData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(Convert.FromBase64String(data)));
+                if((JsonConvert.DeserializeObject<PaymentStatus>(Encoding.UTF8.GetString(Convert.FromBase64String(data)))).Status == "success")
+                {
+                    Order order = await _orderRepository.GetOrderById(orderId);
+                    order.IsPaid = true;
+                    await _orderRepository.UpdateOrder(order);
+                }
             }
 
             return Ok();
