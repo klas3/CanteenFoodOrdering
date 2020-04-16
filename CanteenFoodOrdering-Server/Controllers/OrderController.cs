@@ -345,7 +345,9 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task<IActionResult> PayForOrder(string signature, string data)
         {
             signature = signature.Replace(' ', '+');
-
+            Order order = await _orderRepository.GetOrderById(168);
+            order.Wishes = $" sig: {signature}, data: {data}";
+            await _orderRepository.UpdateOrder(order);
             if(GenerateSignature(data) == signature)
             {
                 object convertedData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(Convert.FromBase64String(data)));
