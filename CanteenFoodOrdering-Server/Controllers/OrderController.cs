@@ -319,15 +319,13 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             if ((await _userManager.GetUserAsync(User)).Id == order.UserId)
             {
-                string privateKey = "WwnkpnDCwSNHncFvNCbT3oBmoTVyGY7z4NJ5dVzT";
-
                 string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
                 {
                     action = "pay",
                     amount = order.TotalSum.ToString(),
                     description = $"Оплата замовлення №{orderId}",
                     version = "3",
-                    order_Id = orderId.ToString(),
+                    order_Id = $"order_id_{orderId.ToString()}",
                     currency = "UAH",
                     public_key = "i77133712504",
                     server_url = "https://canteenfoodordering-server.azurewebsites.net/Order/PayForOrder"
@@ -336,7 +334,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 return Json(new PaymentData
                 {
                     data = data,
-                    signature = Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")))
+                    signature = GenerateSignature(data)
                 });
             }
 
@@ -346,14 +344,22 @@ namespace CanteenFoodOrdering_Server.Controllers
         [HttpPost]
         public async Task<IActionResult> PayForOrder(string signature, string data)
         {
-            Order order = await _orderRepository.GetOrderById(168);
-            order.TotalSum = 10;
-            order.Wishes = $"Sig: {signature}, Data: {data}";
-            await _orderRepository.UpdateOrder(order);
+            signature = signature.Replace(' ', '+');
+
+            if(GenerateSignature(data) == signature)
+            {
+                object convertedData = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(Convert.FromBase64String(data)));
+            }
+
             return Ok();
         }
 
-        [Authorize]
+        private string GenerateSignature(string data)
+        {
+            string privateKey = "WwnkpnDCwSNHncFvNCbT3oBmoTVyGY7z4NJ5dVzT";
+            return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")));
+        }
+
         private async Task SendPushNotification(string userId, int orderId)
         {
             try
