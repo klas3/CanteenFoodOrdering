@@ -115,7 +115,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                                 if (signInUserResult.Succeeded)
                                 {
-                                    await _userRepository.SetPushTokenToUser(await _userManager.GetUserAsync(User), viewModel.PushToken);
+                                    await _userRepository.SetPushTokenToUser(await _userManager.FindByIdAsync(user.Id), viewModel.PushToken);
                                     return Ok();
                                 }
                             }
