@@ -61,5 +61,10 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.DBUsers.SingleOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task<User> GetUserByLogin(string userName)
+        {
+            return await _context.DBUsers.SingleOrDefaultAsync(u => u.UserName == userName);
+        }
     }
 }

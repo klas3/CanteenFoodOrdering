@@ -16,5 +16,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task SetPushTokenToUser(User user, string pushToken);
         string GenerateRandomKey();
         Task<User> GetUserById(string id);
+        Task<User> GetUserByLogin(string userName);
     }
 }

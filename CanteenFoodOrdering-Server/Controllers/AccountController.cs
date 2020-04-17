@@ -44,7 +44,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, true, false);
                 if (result.Succeeded)
                 {
-                    await _userRepository.SetPushTokenToUser(await _userManager.GetUserAsync(User), loginModel.PushToken);
+                    await _userRepository.SetPushTokenToUser(await _userRepository.GetUserByLogin(loginModel.Login), loginModel.PushToken);
                     return Ok();
                 }
             }
