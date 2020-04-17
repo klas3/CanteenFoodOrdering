@@ -12,10 +12,13 @@ using Microsoft.AspNetCore.Identity;
 using System.Net.Http;
 using CanteenFoodOrdering_Server.Chats;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
-    [Authorize]
     public class OrderController : Controller
     {
         private UserManager<User> _userManager;
@@ -23,7 +26,8 @@ namespace CanteenFoodOrdering_Server.Controllers
         private IOrderedDishRepository _orderedDishRepository;
         private IDishRepository _dishRepository;
         private IUserRepository _userRepository;
-        private OrdersHub _ordersHub; 
+        private OrdersHub _ordersHub;
+        private IConfiguration _configuration;
 
         public OrderController
         (   UserManager<User> userManager,
@@ -31,7 +35,8 @@ namespace CanteenFoodOrdering_Server.Controllers
             IOrderedDishRepository orderedDishRepository,
             IDishRepository dishRepository,
             IUserRepository userRepository,
-            IHubContext<OrdersHub> hubContext
+            IHubContext<OrdersHub> hubContext,
+            IConfiguration configuration
         )
         {
             _userManager = userManager;
@@ -40,9 +45,11 @@ namespace CanteenFoodOrdering_Server.Controllers
             _dishRepository = dishRepository;
             _userRepository = userRepository;
             _ordersHub = new OrdersHub(hubContext);
+            _configuration = configuration;
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderViewModel model)
         {
             if (ModelState.IsValid)
@@ -106,12 +113,13 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllFullOrdersInfo()
         {
             List<FullOrderViewModel> models = new List<FullOrderViewModel>();
             List<Order> orders;
 
-            if (User.IsInRole("Cash"))
+            if (User.IsInRole("Administrator"))
             {
                 orders = await _orderRepository.GetUnpaidOrders();
             }
@@ -121,7 +129,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
             else
             {
-                orders = await _orderRepository.GetCustomerOders(await _userManager.GetUserAsync(User));
+                orders = await _orderRepository.GetOdersByUserId(await _userManager.GetUserAsync(User));
 
                 if (orders == null)
                 {
@@ -147,7 +155,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Cash")]
+        [Authorize(Roles = "Cash, Administrator")]
         public async Task<IActionResult> SetToTrueOrderPaymentStatusById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
@@ -266,13 +274,14 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> DeleteOrderById(int id)
         {
             Order order = await _orderRepository.GetOrderById(id);
 
             if (order != null)
             {
-                if(!User.IsInRole("Cash") && !User.IsInRole("Cook"))
+                if(User.IsInRole("Customer"))
                 {
                     if (order.UserId != (await _userManager.GetUserAsync(User))?.Id)
                     {
@@ -287,11 +296,11 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 await _orderRepository.DeleteOrder(order);
 
-                if (User.IsInRole("Cash") || User.IsInRole("Customer"))
+                if (!order.IsPaid)
                 {
                     await _ordersHub.RemoveOnCashier(id);
                 }
-                else if(User.IsInRole("Cook"))
+                else
                 {
                     await _ordersHub.RemoveOnCook(id);
                 }
@@ -300,6 +309,61 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPaymentData(int orderId)
+        {
+            Order order = await _orderRepository.GetOrderById(orderId);
+
+            if ((await _userManager.GetUserAsync(User)).Id == order.UserId && !order.IsPaid)
+            {
+                string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
+                {
+                    action = "pay",
+                    amount = order.TotalSum.ToString(),
+                    description = $"Оплата замовлення №{orderId}",
+                    version = "3",
+                    order_Id = orderId.ToString(),
+                    currency = "UAH",
+                    public_key = "i77133712504",
+                    server_url = $"https://canteenfoodordering-server.azurewebsites.net/Order/PayForOrder/{orderId}"
+                })));
+
+                return Json(new PaymentData
+                {
+                    data = data,
+                    signature = GenerateSignature(data)
+                });
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        [Route("{controller}/{action}/{orderId}")]
+        public async Task<IActionResult> PayForOrder(int orderId, string signature, string data)
+        {
+            signature = signature.Replace(' ', '+');
+            
+            if(GenerateSignature(data) == signature)
+            {
+                if((JsonConvert.DeserializeObject<PaymentStatus>(Encoding.UTF8.GetString(Convert.FromBase64String(data)))).Status == "success")
+                {
+                    Order order = await _orderRepository.GetOrderById(orderId);
+                    order.IsPaid = true;
+                    await _orderRepository.UpdateOrder(order);
+                }
+            }
+
+            return Ok();
+        }
+
+        private string GenerateSignature(string data)
+        {
+            string privateKey = "WwnkpnDCwSNHncFvNCbT3oBmoTVyGY7z4NJ5dVzT";
+            return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"{privateKey}{data}{privateKey}")));
         }
 
         private async Task SendPushNotification(string userId, int orderId)

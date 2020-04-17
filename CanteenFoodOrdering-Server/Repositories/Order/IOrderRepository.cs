@@ -10,12 +10,12 @@ namespace CanteenFoodOrdering_Server.Repositories
     {
         Task CreateOrder(Order order);
         Task CreateOrderHistory(OrderHistory order);
-        Task<List<Order>> GetCustomerOders(User customer);
+        Task<List<Order>> GetOdersByUserId(User customer);
         Task<Order> GetOrderById(int id);
         Task<List<Order>> GetOrders();
         Task<List<Order>> GetPaidOrders();
-        Task<List<Order>> GetUnpaidOrders();
         Task UpdateOrder(Order order);
         Task DeleteOrder(Order order);
+        Task<List<Order>> GetUnpaidOrders();
     }
 }

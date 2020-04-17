@@ -36,7 +36,7 @@ namespace CanteenFoodOrdering_Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Order>> GetCustomerOders(User customer)
+        public async Task<List<Order>> GetOdersByUserId(User customer)
         {
             return await _context.Orders.Where(order => order.UserId == customer.Id).ToListAsync();
         }

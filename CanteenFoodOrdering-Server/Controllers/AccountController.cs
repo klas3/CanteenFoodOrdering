@@ -232,5 +232,12 @@ namespace CanteenFoodOrdering_Server.Controllers
 
             return Problem();
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserId()
+        {
+            return Json((await _userManager.GetUserAsync(User)).Id);
+        }
     }
 }
