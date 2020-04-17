@@ -44,6 +44,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                 var result = await _signInManager.PasswordSignInAsync(loginModel.Login, loginModel.Password, true, false);
                 if (result.Succeeded)
                 {
+                    await _userRepository.SetPushTokenToUser(await _userManager.GetUserAsync(User), loginModel.PushToken);
                     return Ok();
                 }
             }
@@ -114,6 +115,7 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                                 if (signInUserResult.Succeeded)
                                 {
+                                    await _userRepository.SetPushTokenToUser(await _userManager.GetUserAsync(User), viewModel.PushToken);
                                     return Ok();
                                 }
                             }
@@ -208,29 +210,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         [HttpGet]
         public IActionResult CheckIfUserAlreadyAuthorized()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return Json(true);
-            }
-
-            return Json(false);
-        }
-
-        [HttpPost]
-        [Authorize]
-        [Route("{controller}/{action}/{pushToken}")]
-        public async Task<IActionResult> SetPushTokenToUser(string pushToken)
-        {
-            if (pushToken != null && pushToken != "")
-            {
-                var user = await _userManager.GetUserAsync(User);
-
-                await _userRepository.SetPushTokenToUser(user, pushToken);
-
-                return Ok();
-            }
-
-            return Problem();
+            return Json(User.Identity.IsAuthenticated);
         }
 
         [HttpGet]
