@@ -317,7 +317,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         {
             Order order = await _orderRepository.GetOrderById(orderId);
 
-            if ((await _userManager.GetUserAsync(User)).Id == order.UserId)
+            if ((await _userManager.GetUserAsync(User)).Id == order.UserId && !order.IsPaid)
             {
                 string data = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new PaymentJson
                 {
