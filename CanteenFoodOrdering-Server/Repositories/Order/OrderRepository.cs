@@ -66,5 +66,10 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.Orders.Where(order => order.IsPaid == false).ToListAsync();
         }
+
+        public async Task<List<Order>> GetCashierOrders(string userId)
+        {
+            return await _context.Orders.Where(o => o.UserId == userId && !o.IsPaid).ToListAsync();
+        }
     }
 }

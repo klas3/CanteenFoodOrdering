@@ -127,6 +127,10 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 orders = await _orderRepository.GetPaidOrders();
             }
+            else if (User.IsInRole("Cash"))
+            {
+                orders = await _orderRepository.GetCashierOrders((await _userManager.GetUserAsync(User)).Id);
+            }
             else
             {
                 orders = await _orderRepository.GetOdersByUserId(await _userManager.GetUserAsync(User));
