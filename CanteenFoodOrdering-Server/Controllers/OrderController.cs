@@ -214,11 +214,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 OrderHistory orderHistory = new OrderHistory
                 {
-                    CreationDate = order.CreationDate,
-                    DesiredDate = order.DesiredDate,
-                    Wishes = order.Wishes,
-                    TotalSum = order.TotalSum,
-                    IsPaid = order.IsPaid
+                    CompletionDate = DateTime.Now
                 };
 
                 await _orderRepository.DeleteOrder(order);
@@ -362,6 +358,12 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetArchivedOrders(DateTime date)
+        {
+            return Json(await _orderRepository.GetArchivedOrdersDishes(date));
         }
 
         private string GenerateSignature(string data)

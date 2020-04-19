@@ -18,5 +18,6 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task DeleteOrder(Order order);
         Task<List<Order>> GetUnpaidOrders();
         Task<List<Order>> GetCashierOrders(string userId);
+        Task<List<OrderedDishHistory>> GetArchivedOrdersDishes(DateTime date);
     }
 }

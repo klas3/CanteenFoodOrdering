@@ -71,5 +71,14 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context.Orders.Where(o => o.UserId == userId && !o.IsPaid).ToListAsync();
         }
+
+        public async Task<List<OrderedDishHistory>> GetArchivedOrdersDishes(DateTime date)
+        {
+            return await _context
+                .OrderedDishHistories
+                .Where(d => d.OrderHistory.CompletionDate.Date == date.Date)
+                .Include(o => o.DishHistory)
+                .ToListAsync();
+        }
     }
 }

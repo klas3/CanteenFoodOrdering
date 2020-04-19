@@ -129,20 +129,8 @@ namespace CanteenFoodOrdering_Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime>("CompletionDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DesiredDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("bit");
-
-                    b.Property<float>("TotalSum")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Wishes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderHistoryId");
 
