@@ -362,7 +362,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
-        // [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GetArchivedOrders(DateTime date)
         {
             List<OrderedDishHistory> dishes = await _orderRepository.GetArchivedOrdersDishes(date);
