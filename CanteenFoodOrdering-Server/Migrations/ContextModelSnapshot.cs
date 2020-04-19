@@ -241,6 +241,12 @@ namespace CanteenFoodOrdering_Server.Migrations
                     b.Property<string>("PushToken")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ResetCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("ResetCodeCreationTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 

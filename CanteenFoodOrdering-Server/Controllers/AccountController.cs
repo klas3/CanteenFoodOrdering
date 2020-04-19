@@ -9,6 +9,8 @@ using System.Security.Claims;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using CanteenFoodOrdering_Server.Models;
+using CanteenFoodOrdering_Server.Services;
+using System.Threading;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -19,6 +21,7 @@ namespace CanteenFoodOrdering_Server.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private IUserRepository _userRepository;
         private IEmailSender _emailSender;
+        private IResetCodesCleaner _resetCodesCleaner;
 
         public AccountController
         (
@@ -26,7 +29,8 @@ namespace CanteenFoodOrdering_Server.Controllers
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
-            IEmailSender emailSender
+            IEmailSender emailSender,
+            IResetCodesCleaner resetCodesCleaner
         )
         {
             _signInManager = signInManager;
@@ -34,6 +38,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             _roleManager = roleManager;
             _userRepository = userRepository;
             _emailSender = emailSender;
+            _resetCodesCleaner = resetCodesCleaner;
         }
 
         [HttpPost]
@@ -169,11 +174,15 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 if (user != null)
                 {
-                    string newPassword = _userRepository.GenerateRandomKey();
-                    string newPasswordHash = _userManager.PasswordHasher.HashPassword(user, newPassword);
+                    string resetCode = GenerateRandomKey();
 
-                    await _userRepository.ChangePasswordHash(user, newPasswordHash);
-                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Використайте для логіна наступний тимчасной пароль {newPassword}");
+                    await _userRepository.AddResetCodeForUser(user, resetCode);
+                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Ваш код відновлення паролю: {resetCode}");
+
+                    if (!_resetCodesCleaner.CheckIfTimerIsExecuting())
+                    {
+                        _resetCodesCleaner.ProvideCleaningAsync();
+                    }
 
                     return Ok();
                 }
@@ -218,6 +227,16 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task<IActionResult> GetUserId()
         {
             return Json((await _userManager.GetUserAsync(User)).Id);
+        }
+
+        private string GenerateRandomKey()
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            int length = 8;
+
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

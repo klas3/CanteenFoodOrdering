@@ -9,6 +9,8 @@ namespace CanteenFoodOrdering_Server.Models
     public class User : IdentityUser
     {
         public string PushToken { get; set; }
+        public string ResetCode { get; set; }
+        public TimeSpan ResetCodeCreationTime { get; set; }
 
         public virtual ICollection<Order> Order { get; set; }
     }

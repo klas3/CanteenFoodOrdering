@@ -12,9 +12,8 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task<bool> IsUserNameUnique(string username);
         Task<bool> IsEmailUnique(string email);
         Task<string> GetUserEmailById(string id);
-        Task ChangePasswordHash(User user, string newPasswordHash);
         Task SetPushTokenToUser(User user, string pushToken);
-        string GenerateRandomKey();
+        Task AddResetCodeForUser(User user, string resetCode);
         Task<User> GetUserById(string id);
         Task<User> GetUserByLogin(string userName);
     }

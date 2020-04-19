@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using CanteenFoodOrdering_Server.Data;
 using Microsoft.EntityFrameworkCore;
 using CanteenFoodOrdering_Server.Repositories;
+using CanteenFoodOrdering_Server.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using CanteenFoodOrdering_Server.Models;
@@ -42,6 +43,7 @@ namespace CanteenFoodOrdering_Server
             services.AddScoped<IOrderedDishRepository, OrderedDishRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IResetCodesCleaner, ResetCodesCleaner>();
 
             services.AddIdentity<User, IdentityRole>(options =>
             {
