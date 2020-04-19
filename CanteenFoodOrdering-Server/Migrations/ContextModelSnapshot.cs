@@ -169,6 +169,9 @@ namespace CanteenFoodOrdering_Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("DishCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("DishHistoryId")
                         .HasColumnType("int");
 

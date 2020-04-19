@@ -76,7 +76,7 @@ namespace CanteenFoodOrdering_Server.Repositories
         {
             return await _context
                 .OrderedDishHistories
-                .Where(d => d.OrderHistory.CompletionDate.Date == date.Date)
+                .Where(d => DateTime.Compare(d.OrderHistory.CompletionDate, date) == 0)
                 .Include(o => o.DishHistory)
                 .ToListAsync();
         }

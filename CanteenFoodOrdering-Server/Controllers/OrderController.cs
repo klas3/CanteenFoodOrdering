@@ -214,10 +214,9 @@ namespace CanteenFoodOrdering_Server.Controllers
             {
                 OrderHistory orderHistory = new OrderHistory
                 {
-                    CompletionDate = DateTime.Now
+                    CompletionDate = DateTime.Now.Date
                 };
 
-                await _orderRepository.DeleteOrder(order);
                 await _orderRepository.CreateOrderHistory(orderHistory);
 
                 foreach (OrderedDish orderedDish in await _orderedDishRepository.GetOrderedDishesByOrderId(id))
@@ -225,10 +224,12 @@ namespace CanteenFoodOrdering_Server.Controllers
                     await _orderedDishRepository.CreateOrderedDishHistory(new OrderedDishHistory
                     {
                         OrderHistoryId = orderHistory.OrderHistoryId,
-                        DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId
+                        DishHistoryId = (await _dishRepository.GetDishById(orderedDish.DishId)).DishId,
+                        DishCount = orderedDish.DishCount
                     });
                 }
 
+                await _orderRepository.DeleteOrder(order);
                 await _ordersHub.RemoveOnCook(id);
 
                 return Ok();
@@ -361,9 +362,32 @@ namespace CanteenFoodOrdering_Server.Controllers
         }
 
         [HttpGet]
+        // [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GetArchivedOrders(DateTime date)
         {
-            return Json(await _orderRepository.GetArchivedOrdersDishes(date));
+            List<OrderedDishHistory> dishes = await _orderRepository.GetArchivedOrdersDishes(date);
+            List<ArchivedDish> resultDishes = new List<ArchivedDish>();
+
+            foreach(OrderedDishHistory dish in dishes)
+            {
+                ArchivedDish existingDish = resultDishes.Find(d => d.Name == dish.DishHistory.Name);
+
+                if (existingDish == null)
+                {
+                    resultDishes.Add(new ArchivedDish
+                    {
+                        Cost = dish.DishHistory.Cost,
+                        Count = dish.DishCount,
+                        Name = dish.DishHistory.Name
+                    });
+                }
+                else
+                {
+                    existingDish.Count += dish.DishCount;
+                }
+            }
+
+            return Json(resultDishes);
         }
 
         private string GenerateSignature(string data)
