@@ -188,26 +188,31 @@ namespace CanteenFoodOrdering_Server.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeViewModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                if (user.ResetCode == model.ResetCode)
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
                 {
-                    if (user.LastResetCodeCreationTime.AddMinutes(5) > DateTime.Now)
+                    if (user.ResetCode == model.ResetCode)
                     {
-                        return Ok();
+                        if (user.LastResetCodeCreationTime.AddMinutes(5) > DateTime.Now)
+                        {
+                            return Ok();
+                        }
+
+                        await _userRepository.ClearResetCodeForUser(user);
+
+                        return Problem("Ваш код вже недійсний");
                     }
 
-                    await _userRepository.ClearResetCodeForUser(user);
-
-                    return Problem("Ваш код вже недійсний");
+                    return Problem("Ви ввели недійсний код");
                 }
 
-                return Problem("Ви ввели недійсний код");
+                return NotFound();
             }
 
-            return NotFound();
+            return Problem();
         }
 
         [HttpGet]
