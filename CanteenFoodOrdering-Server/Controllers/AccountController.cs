@@ -21,7 +21,6 @@ namespace CanteenFoodOrdering_Server.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private IUserRepository _userRepository;
         private IEmailSender _emailSender;
-        private IResetCodesCleaner _resetCodesCleaner;
 
         public AccountController
         (
@@ -29,8 +28,7 @@ namespace CanteenFoodOrdering_Server.Controllers
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
-            IEmailSender emailSender,
-            IResetCodesCleaner resetCodesCleaner
+            IEmailSender emailSender
         )
         {
             _signInManager = signInManager;
@@ -38,7 +36,6 @@ namespace CanteenFoodOrdering_Server.Controllers
             _roleManager = roleManager;
             _userRepository = userRepository;
             _emailSender = emailSender;
-            _resetCodesCleaner = resetCodesCleaner;
         }
 
         [HttpPost]
@@ -179,11 +176,6 @@ namespace CanteenFoodOrdering_Server.Controllers
                     await _userRepository.AddResetCodeForUser(user, resetCode);
                     await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Ваш код відновлення паролю: {resetCode}");
 
-                    if (!_resetCodesCleaner.CheckIfTimerIsExecuting())
-                    {
-                        _resetCodesCleaner.ProvideCleaningAsync();
-                    }
-
                     return Ok();
                 }
 
@@ -191,6 +183,31 @@ namespace CanteenFoodOrdering_Server.Controllers
             }
 
             return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user != null)
+            {
+                if (user.ResetCode == model.ResetCode)
+                {
+                    if (user.LastResetCodeCreationTime.AddMinutes(5) > DateTime.Now)
+                    {
+                        return Ok();
+                    }
+
+                    await _userRepository.ClearResetCodeForUser(user);
+
+                    return Problem("Ваш код вже недійсний");
+                }
+
+                return Problem("Ви ввели недійсний код");
+            }
+
+            return NotFound();
         }
 
         [HttpGet]

@@ -13,8 +13,9 @@ namespace CanteenFoodOrdering_Server.Repositories
         Task<bool> IsEmailUnique(string email);
         Task<string> GetUserEmailById(string id);
         Task SetPushTokenToUser(User user, string pushToken);
-        Task AddResetCodeForUser(User user, string resetCode);
         Task<User> GetUserById(string id);
         Task<User> GetUserByLogin(string userName);
+        Task AddResetCodeForUser(User user, string resetCode);
+        Task ClearResetCodeForUser(User user);
     }
 }

@@ -10,7 +10,7 @@ namespace CanteenFoodOrdering_Server.Models
     {
         public string PushToken { get; set; }
         public string ResetCode { get; set; }
-        public TimeSpan ResetCodeCreationTime { get; set; }
+        public DateTime LastResetCodeCreationTime { get; set; }
 
         public virtual ICollection<Order> Order { get; set; }
     }

@@ -54,8 +54,14 @@ namespace CanteenFoodOrdering_Server.Repositories
         public async Task AddResetCodeForUser(User user, string resetCode)
         {
             user.ResetCode = resetCode;
-            user.ResetCodeCreationTime = DateTime.Now.TimeOfDay;
+            user.LastResetCodeCreationTime = DateTime.Now;
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ClearResetCodeForUser(User user)
+        {
+            user.ResetCode = null;
             await _context.SaveChangesAsync();
         }
     }
