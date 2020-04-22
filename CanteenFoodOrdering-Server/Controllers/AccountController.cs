@@ -9,6 +9,8 @@ using System.Security.Claims;
 using CanteenFoodOrdering_Server.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using CanteenFoodOrdering_Server.Models;
+using CanteenFoodOrdering_Server.Services;
+using System.Threading;
 
 namespace CanteenFoodOrdering_Server.Controllers
 {
@@ -169,13 +171,42 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 if (user != null)
                 {
-                    string newPassword = _userRepository.GenerateRandomKey();
-                    string newPasswordHash = _userManager.PasswordHasher.HashPassword(user, newPassword);
+                    string resetCode = GenerateRandomKey();
 
-                    await _userRepository.ChangePasswordHash(user, newPasswordHash);
-                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Використайте для логіна наступний тимчасной пароль {newPassword}");
+                    await _userRepository.AddResetCodeForUser(user, resetCode);
+                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Ваш код відновлення паролю: {resetCode}");
 
                     return Ok();
+                }
+
+                return NotFound();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    if (user.ResetCode == model.ResetCode)
+                    {
+                        if (user.LastResetCodeCreationTime.AddMinutes(5) > DateTime.Now)
+                        {
+                            return Ok();
+                        }
+
+                        await _userRepository.ClearResetCodeForUser(user);
+
+                        return Problem("Ваш код вже недійсний");
+                    }
+
+                    return Problem("Ви ввели недійсний код");
                 }
 
                 return NotFound();
@@ -218,6 +249,16 @@ namespace CanteenFoodOrdering_Server.Controllers
         public async Task<IActionResult> GetUserId()
         {
             return Json((await _userManager.GetUserAsync(User)).Id);
+        }
+
+        private string GenerateRandomKey()
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            int length = 8;
+
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

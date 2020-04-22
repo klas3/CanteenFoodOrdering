@@ -35,26 +35,10 @@ namespace CanteenFoodOrdering_Server.Repositories
             return (await _userManager.FindByIdAsync(id)).Email;
         }
 
-        public async Task ChangePasswordHash(User user, string newPasswordHash)
-        {
-            user.PasswordHash = newPasswordHash;
-            await _context.SaveChangesAsync();
-        }
-
         public async Task SetPushTokenToUser(User user, string pushToken)
         {
             user.PushToken = pushToken;
             await _context.SaveChangesAsync();
-        }
-
-        public string GenerateRandomKey()
-        {
-            Random random = new Random();
-
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            int length = 8;
-
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         public async Task<User> GetUserById(string id)
@@ -65,6 +49,20 @@ namespace CanteenFoodOrdering_Server.Repositories
         public async Task<User> GetUserByLogin(string userName)
         {
             return await _context.DBUsers.SingleOrDefaultAsync(u => u.UserName == userName);
+        }
+
+        public async Task AddResetCodeForUser(User user, string resetCode)
+        {
+            user.ResetCode = resetCode;
+            user.LastResetCodeCreationTime = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ClearResetCodeForUser(User user)
+        {
+            user.ResetCode = null;
+            await _context.SaveChangesAsync();
         }
     }
 }

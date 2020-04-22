@@ -206,6 +206,9 @@ namespace CanteenFoodOrdering_Server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("LastResetCodeCreationTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -230,6 +233,9 @@ namespace CanteenFoodOrdering_Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PushToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
