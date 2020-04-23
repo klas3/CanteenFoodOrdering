@@ -183,17 +183,13 @@ namespace CanteenFoodOrdering_Server.Controllers
                             {
                                 return Ok();
                             }
-
-                            return Problem();
                         }
-
-                        return Problem();
                     }
-
-                    return Problem();
                 }
-
-                return NotFound();
+                else
+                {
+                    return NotFound();
+                }
             }
 
             return Problem();
