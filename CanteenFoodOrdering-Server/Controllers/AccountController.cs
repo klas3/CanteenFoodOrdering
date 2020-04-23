@@ -171,6 +171,43 @@ namespace CanteenFoodOrdering_Server.Controllers
 
                 if (user != null)
                 {
+                    if (user.ResetCode == model.ResetCode)
+                    {
+                        var result = await _userManager.RemovePasswordAsync(user);
+
+                        if (result.Succeeded)
+                        {
+                            result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+
+                            if (result.Succeeded)
+                            {
+                                return Ok();
+                            }
+
+                            return Problem();
+                        }
+
+                        return Problem();
+                    }
+
+                    return Problem();
+                }
+
+                return NotFound();
+            }
+
+            return Problem();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RequestResetPassword([FromBody] SubmitEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
                     string resetCode = GenerateRandomKey();
 
                     await _userRepository.AddResetCodeForUser(user, resetCode);

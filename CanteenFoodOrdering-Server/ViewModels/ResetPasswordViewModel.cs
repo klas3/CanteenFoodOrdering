@@ -9,6 +9,10 @@ namespace CanteenFoodOrdering_Server.ViewModels
     public class ResetPasswordViewModel
     {
         [Required]
+        public string NewPassword { get; set; }
+        [Required]
         public string Email { get; set; }
+        [Required]
+        public string ResetCode { get; set; }
     }
 }
