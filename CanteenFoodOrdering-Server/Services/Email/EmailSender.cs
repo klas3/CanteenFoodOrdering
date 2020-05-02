@@ -71,7 +71,7 @@ namespace CanteenFoodOrdering_Server.Services
         {
             string body = "";
             var webRoot = _environment.WebRootPath;
-            var htmlFile = Path.Combine(webRoot, "lib", "email-template", "email-recovery-code-template.html");
+            var htmlFile = Path.Combine(webRoot, "lib", "email-templates", "email-recovery-code-template.html");
 
             using (StreamReader reader = new StreamReader(htmlFile))
             {
