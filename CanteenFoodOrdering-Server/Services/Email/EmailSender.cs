@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MimeKit;
-using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using MimeKit;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CanteenFoodOrdering_Server.Services
 {
@@ -39,9 +35,9 @@ namespace CanteenFoodOrdering_Server.Services
             _port = mail.GetValue<int>("Port");
         }
 
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string username, string message)
         {
-            MimeMessage emailMessage = CreateMimeMessage(email, subject, message);
+            MimeMessage emailMessage = CreateMimeMessage(email, subject, username, message);
 
             using (var client = new SmtpClient())
             {
@@ -60,22 +56,22 @@ namespace CanteenFoodOrdering_Server.Services
             }
         }
 
-        private MimeMessage CreateMimeMessage(string email, string subject, string message)
+        private MimeMessage CreateMimeMessage(string email, string subject, string username, string message)
         {
             MimeMessage emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_title, _email));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message };
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = CreatePasswordRecoveryHtmlBody(username, message) };
 
             return emailMessage;
         }
 
-        private string CreateHtmlBody(string message, string buttonLink, string buttonText)
+        private string CreatePasswordRecoveryHtmlBody(string username, string recoveryCode)
         {
             string body = "";
             var webRoot = _environment.WebRootPath;
-            var htmlFile = Path.Combine(webRoot, "lib", "template", "email-letter-template.html");
+            var htmlFile = Path.Combine(webRoot, "lib", "email-templates", "email-recovery-code-template.html");
 
             using (StreamReader reader = new StreamReader(htmlFile))
             {
@@ -84,10 +80,9 @@ namespace CanteenFoodOrdering_Server.Services
 
             string domainUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}";
 
-            body = body.Replace("{CONTENT}", message);
+            body = body.Replace("{username}", username);
+            body = body.Replace("{recovery-code}", recoveryCode);
             body = body.Replace("{domain-url}", domainUrl);
-            body = body.Replace("{button-link}", buttonLink);
-            body = body.Replace("{button-text}", buttonText);
 
             return body;
         }

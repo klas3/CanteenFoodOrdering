@@ -207,7 +207,7 @@ namespace CanteenFoodOrdering_Server.Controllers
                     string resetCode = GenerateRandomKey();
 
                     await _userRepository.AddResetCodeForUser(user, resetCode);
-                    await _emailSender.SendEmailAsync(user.Email, "Відновлення пароля", $"Ваш код відновлення паролю: {resetCode}");
+                    await _emailSender.SendEmailAsync(user.Email, "Відновлення паролю", user.UserName, resetCode);
 
                     return Ok();
                 }
