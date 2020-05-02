@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email template</title>
+    <style>
+        h1 {
+            padding: 0px;
+            margin: 0px;
+        }
+        h2 {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+    <table align="center" border="0" style="width: 95%; height: 500px; position: relative; background-color: rgb(250, 211, 57); border-radius: 0px 0px 15px 15px;" cellspacing="0" cellpadding="0">
+        <tbody>
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; justify-content: left; width: 720px; flex-wrap: wrap; margin-left: 90px; margin-top: 10px; margin-bottom: 10px;">
+                        <img src="{domain-url}/lib/email-images/PPC_logo.png" style="width: 72px;" />
+                        <div align="left" style="display: flex;">
+                            <h1 style="font-family: Arial, sans-serif; font-size: 40px; margin: 0, auto;">PPC</h1>
+                            <h2 style="margin-left: 20px; margin-top: 13.5px; font-family: Courier; letter-spacing: 10px; font-size: 30px;">Canteen</h2>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table style="width: 720px; height: 450px; background-color: white; border-radius: 20px;">
+                        <tbody>
+                            <tr>
+                                <td align="center">
+                                    <div style="margin-bottom: 50px;">
+                                        <h1 style="margin-bottom: 50px;">Привіт, {username}</h1>
+                                        <h2>Ваш код відновлення паролю:</h2>
+                                    </div>
+                                    <div style="margin-bottom: 50px; width: 80%; background-color: rgb(249, 255, 132); border-radius: 100px;">
+                                        <h1 style="font-size: 80px;">
+                                            {recovery-code}
+                                        </h1>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <p style="font-style: italic; font-size: smaller;">
+                        © 2020 PPC Canteen
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

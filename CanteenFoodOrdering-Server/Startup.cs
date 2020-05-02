@@ -54,6 +54,8 @@ namespace CanteenFoodOrdering_Server
             })
             .AddEntityFrameworkStores<Context>();
 
+            services.AddHttpContextAccessor();
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireEmail", policy => policy.RequireClaim(ClaimTypes.Email));

@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Chats\" />
+    <Folder Include="wwwroot\lib\email-images\" />
   </ItemGroup>
 
 
