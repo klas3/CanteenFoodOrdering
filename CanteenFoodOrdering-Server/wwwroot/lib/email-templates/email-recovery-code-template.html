@@ -26,6 +26,10 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
+        .titleContainer {
+            display: flex;
+            margin-top: 10px;
+        }
         .mainTitlePart {
             font-family: Arial, sans-serif;
             font-size: 40px;
@@ -46,7 +50,7 @@
         }
         .recoveryCodeContainer {
             margin-bottom: 50px;
-            width: 80%;
+            width: 60%;
             background-color: rgb(249, 255, 132);
             border-radius: 100px;
         }
@@ -63,7 +67,7 @@
                 <td>
                     <div class="headerContainer">
                         <img src="{domain-url}/lib/email-images/PPC_logo.png" style="width: 72px;" />
-                        <div align="left" style="display: flex;">
+                        <div class="titleContainer" align="left">
                             <h1 class="mainTitlePart">PPC</h1>
                             <h2 class="secondTitlePart">Canteen</h2>
                         </div>
@@ -81,9 +85,9 @@
                                         <h2>Ваш код відновлення паролю:</h2>
                                     </div>
                                     <div class="recoveryCodeContainer">
-                                        <h1 style="font-size: 80px;">
+                                        <p style="font-size: 60px;">
                                             {recovery-code}
-                                        </h1>
+                                        </p>
                                     </div>
                                 </td>
                             </tr>
